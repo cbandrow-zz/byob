@@ -1,4 +1,30 @@
 const carData = require ('../../../data.json')
+
+const addTrims = (carData) =>{
+  let holder = {};
+  let count = 0;
+
+  let addCount = carData.map((car, i) =>{
+    car.trim = 1;
+    return car
+  })
+
+  let newCarData = addCount.map((car, i) =>{
+    if(parseInt(car.Year, 10) === parseInt(carData[i-count].Year) && car.Model === carData[i-count].Model){
+      console.log('match year and model', car.Model, car.Year)
+      car.trim = carData[i-count].trim + 1;
+      count = 1;
+    } else {
+      console.log('no match')
+      count = 0;
+      car.trim = 1;
+    }
+    return car
+  })
+  return newCarData
+}
+addTrims(carData)
+
 const reduceMakes = (carData) =>{
   let newCarData = carData.reduce((acc, car)=>{
    if(!acc[car.Make]){
