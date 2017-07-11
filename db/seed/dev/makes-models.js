@@ -1,50 +1,10 @@
 const carData = require ('../../../data.json')
+const Helper = require('../../../helper')
 
-const addTrims = (carData) =>{
-  let holder = {};
-  let count = 0;
-
-  let addCount = carData.map((car, i) =>{
-    car.trim = 1;
-    return car
-  })
-
-  let newCarData = addCount.map((car, i) =>{
-    if(parseInt(car.Year, 10) === parseInt(carData[i-count].Year) && car.Model === carData[i-count].Model){
-      console.log('match year and model', car.Model, car.Year)
-      car.trim = carData[i-count].trim + 1;
-      count = 1;
-    } else {
-      console.log('no match')
-      count = 0;
-      car.trim = 1;
-    }
-    return car
-  })
-  return newCarData
-}
-addTrims(carData)
-
-const reduceMakes = (carData) =>{
-  let newCarData = carData.reduce((acc, car)=>{
-   if(!acc[car.Make]){
-     acc[car.Make] = {
-       name: car.Make,
-       models: [car.Model]
-     }
-   } else if (acc[car.Make]){
-     if(!acc[car.Make].models.includes(car.Model)){
-       acc[car.Make].models.push(car.Model)
-     }
-   }
-   return acc
- }, {})
- return newCarData
-}
+let helper = new Helper()
 
 const importMakes = (knex, make, carsData) =>{
   let models = carsData[make].models;
-
   return knex('makes').insert({
     make_name: make
   }, 'id')
@@ -60,16 +20,62 @@ const importMakes = (knex, make, carsData) =>{
 };
 
 const importModels = (knex, model, make) =>{
+  let years = model.years
   return knex('models').insert({
-    model_name: model,
-    make_id: make[0]
+    model_name: model.name,
+    make_id: make[0],
   }, 'id')
+    .then((model) =>{
+      let yearsPromise = [];
+      years.forEach((year)=>{
+        yearsPromise.push(importYears(knex, year, model))
+      })
+      return Promise.all(yearsPromise)
+      .then(() => console.log('Seeding Complete at Years'))
+      .catch((error) => console.log(`Error seeding at Years Promise: ${error}`))
+    })
 };
 
-exports.seed = (knex, Promise) => {
-  let carsData = reduceMakes(carData);
-  let makesArray = Object.keys(carsData);
+const importYears = (knex, year, model) =>{
+  let trims = year.trim
+  return knex('years').insert({
+    year: year.year,
+    model_id: model[0]
+  }, 'id')
+    .then((year) =>{
+      let trimsPromise = [];
+      trims.forEach((trim) =>{
+        trimsPromise.push(importTrims(knex, trim, year))
+      })
+      return Promise.all(trimsPromise)
+      .then(()=> console.log('Seeding Complete at Trims'))
+      .catch((error) => console.log(`Error seeding at Trims Promise: ${error}`))
+    })
+}
 
+const importTrims = (knex, trim, year) =>{
+  return knex('trims').insert({
+    year_id: year[0],
+    trim_id: trim.trim_id,
+    fuel_type: trim.fuel_type,
+    horsepower: trim.horsepower,
+    cylinders: trim.cylinders,
+    transmission: trim.transmission,
+    drive: trim.drive,
+    doors: trim.doors,
+    market: trim.market,
+    size: trim.size,
+    style: trim.style,
+    highway_mpg: trim.highway_mpg,
+    city_mpg: trim.city_mpg,
+    msrp: trim.msrp
+  })
+}
+
+exports.seed = (knex, Promise) => {
+  let carsData = helper.reduceMakes(carData);
+  let makesArray = Object.keys(carsData);
+  console.log(carsData)
   return knex('models').del()
     .then(() => knex('makes').del())
     .then(() =>{
