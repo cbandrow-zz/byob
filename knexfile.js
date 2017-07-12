@@ -15,7 +15,7 @@ module.exports = {
   },
   staging: {
     client: 'pg',
-    connection: process.env.DATABASE_URL || 'postgres://localhost/jetfuel_test',
+    connection: process.env.DATABASE_URL || 'postgres://localhost/cardata',
     useNullAsDefault: true,
     migrations: {
       directory: './db/migrations'
@@ -27,7 +27,7 @@ module.exports = {
 
   test: {
     client: 'pg',
-    connection: process.env.DATABASE_URL || 'postgres://localhost/jetfuel_test',
+    connection: process.env.DATABASE_URL || 'postgres://localhost/cardata',
     useNullAsDefault: true,
     migrations: {
       directory: __dirname +'/db/migrations'
