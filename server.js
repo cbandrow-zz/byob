@@ -1,12 +1,16 @@
 const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
+const bodyParser = require('body-parser')
 
 const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
 const host = process.env.DOMAIN || 'localhost:3000/'
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set('port', process.env.PORT || 3000)
 app.locals.title = "BYOB"
@@ -179,13 +183,82 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
 
 //post: add a new model to makes
 app.post('/api/v1/makes/:make_name/', (request, response) => {
-  console.log(request.body)
+  database('makes').where('make_name', request.params.make_name).select()
+    .then((make) => {
+       database('models').insert({
+         model_name: request.body.name,
+         make_id: make[0].id
+       }, 'id')
+      .then((model)=>{
+          response.status(201).json(model)
+        })
+      .catch((error) =>{
+        response.status(402).json({error: error})
+      })
+    })
+    .catch((error) => {
+      response.status(500).send({
+        'Error': '500: Error posting Make to DB.',
+        error
+      })
+    })
+})
+
+app.post('/api/v1/makes/:make_name/models/:model_name/:year/', (request, response) =>{
+  let trimData = request.body
   database('makes').where({
     make_name: request.params.make_name
-  })
-  .then((make) =>{
-    response.status(201).json(make)
-  })
+    }).select()
+    .then((make) => {
+      database('models').where({
+        model_name: request.params.model_name,
+        make_id: make[0].id
+      }).select()
+      .then((model)=>{
+        database('years').where({
+          year: request.params.year,
+          model_id: model[0].id
+        }).select()
+        .then((year) =>{
+          let yearId = year[0].id
+          database('trims').where({
+            year_id: year[0].id,
+          }).select()
+            .then((trims) =>{
+              let incrementedTrim = trims[0].id + 1
+              database('trims').insert({
+                year_id: yearId,
+                trim_id: incrementedTrim,
+                fuel_type: trimData.fuel_type,
+                horsepower: trimData.horsepower,
+                cylinders: trimData.cylinders,
+                transmission: trimData.transmission,
+                drive: trimData.drive,
+                doors: trimData.doors,
+                market: trimData.market,
+                size: trimData.size,
+                style: trimData.style,
+                highway_mpg: trimData.highway_mpg,
+                city_mpg: trimData.city_mpg,
+                msrp: trimData.msrp
+              })
+              .then(()=>{
+                response.status(200).json(trims)
+              })
+              .catch(() =>{
+                response.status(402).json({
+                  error: 'Error posting a new trim'
+                })
+              })
+          })
+        })
+      })
+    })
+    .catch(() => {
+      response.status(500).send({
+        'Error': '500: Internal error posting specific trim data.'
+      })
+    })
 })
 
 app.listen(app.get('port'), () => {
