@@ -80,7 +80,7 @@ exports.seed = (knex, Promise) => {
     .then(() => knex('makes').del())
     .then(() =>{
       let makesPromise = [];
-      makesArray.forEach((make, i) =>{
+      makesArray.forEach((make) =>{
         makesPromise.push(importMakes(knex, make, carsData))
       })
       return Promise.all(makesPromise)
