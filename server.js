@@ -181,29 +181,6 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
     })
 })
 
-//post: add a new model to makes
-app.post('/api/v1/makes/:make_name/', (request, response) => {
-  database('makes').where('make_name', request.params.make_name).select()
-    .then((make) => {
-       database('models').insert({
-         model_name: request.body.name,
-         make_id: make[0].id
-       }, 'id')
-      .then((model)=>{
-          response.status(201).json(model)
-        })
-      .catch((error) =>{
-        response.status(402).json({error: error})
-      })
-    })
-    .catch((error) => {
-      response.status(500).send({
-        'Error': '500: Error posting Make to DB.',
-        error
-      })
-    })
-})
-
 app.post('/api/v1/makes/:make_name/models/:model_name/:year/', (request, response) =>{
   let trimData = request.body
   database('makes').where({
@@ -243,7 +220,7 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', (request, respons
                 msrp: trimData.msrp
               })
               .then(()=>{
-                response.status(200).json(trims)
+                response.status(201).json(trims)
               })
               .catch(() =>{
                 response.status(402).json({
@@ -257,6 +234,57 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', (request, respons
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error posting specific trim data.'
+      })
+    })
+})
+
+//add completely new model with year and trim data.
+app.post('/api/v1/makes/:make_name', (request, response) =>{
+  let newModelData = request.body
+  database('makes').where({
+    make_name: request.params.make_name
+    }).select()
+    .then((make) => {
+      database('models').insert({
+        model_name: newModelData.model_name,
+        make_id: make[0].id,
+      }, 'id')
+      .then((model)=>{
+        database('years').insert({
+          year: newModelData.year,
+          model_id: model[0]
+        }, 'id')
+        .then((year) =>{
+          database('trims').insert({
+            year_id: year[0],
+            trim_id: newModelData.trim_id,
+            fuel_type: newModelData.fuel_type,
+            horsepower: newModelData.horsepower,
+            cylinders: newModelData.cylinders,
+            transmission: newModelData.transmission,
+            drive: newModelData.drive,
+            doors: newModelData.doors,
+            market: newModelData.market,
+            size: newModelData.size,
+            style: newModelData.style,
+            highway_mpg: newModelData.highway_mpg,
+            city_mpg: newModelData.city_mpg,
+            msrp: newModelData.msrp
+          }).select()
+              .then((trims)=>{
+                response.status(201).json(trims)
+              })
+              .catch(() =>{
+                response.status(402).json({
+                  error: 'Error posting a new trim'
+              })
+          })
+        })
+      })
+    })
+    .catch(() => {
+      response.status(500).send({
+        'Error': '500: Internal error posting detailed model data.'
       })
     })
 })
