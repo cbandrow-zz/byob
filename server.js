@@ -100,6 +100,14 @@ app.get('/api/v1/makes', (request, response) =>{
 
 //get specific make
 app.get('/api/v1/makes/:make_name/', (request, response) => {
+  const make_name = request.params.make_name
+
+  if (!make_name) {
+    return response.status(422).send({
+      error: `Missing make_name parameter in api request. `
+    })
+  }
+
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       if(make.length){
@@ -119,6 +127,14 @@ app.get('/api/v1/makes/:make_name/', (request, response) => {
 
 //get models from make
 app.get('/api/v1/makes/:make_name/models', (request, response) => {
+  const make_name = request.params.make_name
+
+  if (!make_name) {
+    return response.status(422).send({
+      error: `Missing make_name parameter in api request.`
+    })
+  }
+
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       database('models').where('make_id', make[0].id).select()
@@ -164,6 +180,15 @@ app.get('/api/v1/models/', (request, response) => {
 
 //get years per model
 app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
+
+  const model_name = request.params.model_name
+
+  if (!make_name) {
+    return response.status(422).send({
+      error: `Missing make_name parameter in api request.`
+    })
+  }
+
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       database('models').where('model_name', request.params.model_name).select()
@@ -212,6 +237,18 @@ app.get('/api/v1/years/', (request, response) =>{
 
 //get all trims from make -> model -> year
 app.get('/api/v1/makes/:make_name/models/:model_name/:year', (request, response) =>{
+
+  const expectedReq = ["make_name", "model_name", "year"];
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name, a Model Name, and a Year.
+        You are missing a ${requiredParameter} property`
+      })
+    }
+  }
+
   database('makes').where({
     make_name: request.params.make_name
     }).select()
@@ -250,6 +287,18 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year', (request, response)
 
 //get specific trim by trim id
 app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, response) =>{
+
+  const expectedReq = ["make_name", "model_name", "year", "id"];
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name, a Model Name, a Year, and Trim Id.
+        You are missing a ${requiredParameter} property`
+      })
+    }
+  }
+
   database('makes').where({
     make_name: request.params.make_name
     }).select()
@@ -291,6 +340,18 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
 
 //post a new trim to a specific model by year.
 app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (request, response) =>{
+
+  const expectedReq = ["make_name", "model_name", "year"];
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name, a Model Name, and a Year.
+        You are missing a ${requiredParameter} property`
+      })
+    }
+  }
+
   let trimData = request.body.trim
 
   database('makes').where({
@@ -351,6 +412,17 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (reque
 //post completely new model with year and trim data.
 app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
 
+  const expectedReq = "make_name";
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name, a Model Name, and a Year.
+        You are missing a ${requiredParameter} property`
+      })
+    }
+  }
+
   let newModelData = request.body.model
 
   database('makes').where({
@@ -366,7 +438,7 @@ app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
           year: newModelData.year,
           model_id: model[0]
         }, 'id')
-        .then((year) =>{  
+        .then((year) =>{
           database('trims').insert({
             year_id: year[0],
             trim_id: newModelData.trim_id,
@@ -405,6 +477,17 @@ app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
 
 //put trim data and update the specific trim data
 app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', checkAuth, (request, response) =>{
+
+  const expectedReq = ["make_name", "model_name", "year", "trim_id"];
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name, a Model Name, a Year, and Trim ID.
+        You are missing a ${requiredParameter} property`
+      })
+    }
+  }
 
   let trimUpdate = request.body.trim
 
@@ -452,6 +535,17 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', checkAuth,
 //update year data by model
 app.put('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request, response) =>{
 
+  const expectedReq = ["make_name", "model_name", "year"];
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name, a Model Name, and a Year.
+        You are missing a ${requiredParameter} property`
+      })
+    }
+  }
+
   let yearUpdate = request.body.year
 
   database('makes').where({
@@ -489,6 +583,17 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request
 //put update model name
 app.put('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, response) =>{
 
+  const expectedReq = ["make_name", "model_name"];
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name and Model Name.
+        You are missing a ${requiredParameter} property`
+      })
+    }
+  }
+
   let updateModelName = request.body.model_name
 
   database('makes').where('make_name', request.params.make_name).select()
@@ -516,6 +621,18 @@ app.put('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, resp
 
 //delete a model and it's affiliated data.
 app.delete('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, response) =>{
+
+  const expectedReq = ["make_name", "model_name"];
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name and Model Name.
+        You are missing a ${requiredParameter} property`
+      })
+    }
+  }
+
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       database('models').where('model_name', request.params.model_name).select()
@@ -546,6 +663,18 @@ app.delete('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, r
 
 //delete a models's year and it's affiliated data
 app.delete('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request, response) =>{
+
+  const expectedReq = ["make_name", "model_name", "year"];
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name, a Model Name, and a Year.
+        You are missing a ${requiredParameter} property`
+      })
+    }
+  }
+
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       database('models').where('model_name', request.params.model_name).select()
