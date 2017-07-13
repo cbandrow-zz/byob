@@ -181,6 +181,8 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
     })
 })
 
+
+
 app.post('/api/v1/makes/:make_name/models/:model_name/:year/', (request, response) =>{
   let trimData = request.body
   database('makes').where({
@@ -288,6 +290,99 @@ app.post('/api/v1/makes/:make_name', (request, response) =>{
       })
     })
 })
+
+//put trim data
+app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', (request, response) =>{
+  let trimUpdate = request.body.trim
+  database('makes').where({
+    make_name: request.params.make_name
+    }).select()
+    .then((make) => {
+      database('models').where({
+        model_name: request.params.model_name,
+        make_id: make[0].id
+      }).select()
+      .then((model)=>{
+        database('years').where({
+          year: request.params.year,
+          model_id: model[0].id
+        }).select()
+        .then((year) =>{
+          database('trims').where({
+            year_id: year[0].id,
+            trim_id: request.params.trim_id
+          })
+          .update(trimUpdate, 'id')
+              .then((id)=>{
+                response.status(202).json({
+                  id,
+                  'message': `${id} was updated`
+                })
+              })
+              .catch((error) =>{
+                response.status(404).json({
+                  error,
+                  "error": 'Error updating trim data'
+                })
+              })
+          })
+        })
+      })
+    .catch(() => {
+      response.status(500).send({
+        'Error': '500: Internal error updating specific trim data.'
+      })
+    })
+})
+
+//put update model name
+app.put('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
+  let updateModelName = request.body.model_name
+  database('makes').where('make_name', request.params.make_name).select()
+    .then((make) => {
+      database('models').where('model_name', request.params.model_name).update(updateModelName, 'model_name')
+      .then((model_name) =>{
+        response.status(201).json({
+          model_name
+        })
+      })
+      .catch(() => {
+        response.status(404).send({
+          'Error': 'Error, couldn\'t update model name.'
+        })
+      })
+    })
+    .catch(() => {
+      response.status(500).send({
+        'Error': '500: Internal error retrieving specific make by make_name.'
+      })
+    })
+})
+
+app.delete('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
+  let updateModelName = request.body.model_name
+  database('makes').where('make_name', request.params.make_name).select()
+    .then((make) => {
+      database('models').where('model_name', request.params.model_name).update(updateModelName, 'model_name')
+      .then((model_name) =>{
+        response.status(201).json({
+          model_name
+        })
+      })
+      .catch(() => {
+        response.status(404).send({
+          'Error': 'Error, couldn\'t update model name.'
+        })
+      })
+    })
+    .catch(() => {
+      response.status(500).send({
+        'Error': '500: Internal error retrieving specific make by make_name.'
+      })
+    })
+})
+
+
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`)
