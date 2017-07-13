@@ -2,12 +2,15 @@ const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser')
+const config = require('dotenv').config()
 
 const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
-const host = process.env.DOMAIN || 'localhost:3000/'
+app.set('username', config.USERNAME);
+app.set('password', config.PASSWORD);
+app.set('secretKey', config.CLIENT_SECRET);
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -17,6 +20,63 @@ app.locals.title = "BYOB"
 
 app.use(express.static('public'))
 
+if (!config.CLIENT_SECRET || !config.USERNAME || !config.PASSWORD) {
+  throw 'Make sure you have a CLIENT_SECRET, USERNAME, and PASSWORD in your .env file'
+}
+
+
+/////Endpoints/////
+
+//Authentication
+
+app.post('/api/v1/authenticate', (request, response) =>{
+  const user = request.body
+  if (user.username !== config.USERNAME || user.password !== config.PASSWORD) {
+    response.status(403).send({
+      success: false,
+      message: 'Invalid Credentials'
+    });
+
+    } else {
+      let token = jwt.sign(user, app.get('secretKey'), {
+        expiresIn: 604800 // expires in 48 hours
+      });
+
+      response.json({
+        success: true,
+        username: user.username,
+        token: token
+      });
+    }
+})
+
+const checkAuth  = (request, response, next) =>{
+
+  const token = request.body.token ||
+                request.param('token') ||
+                request.headers['authorization'];
+  if (token) {
+    jwt.verify(token, app.get('secretKey'), (error, decoded) => {
+    if (error) {
+      return response.status(403).send({
+        success: false,
+        message: 'Invalid authorization token.'
+      });
+    } else {
+      request.decoded = decoded;
+      next();
+      }
+    });
+  } else {
+    return response.status(403).send({
+      success: false,
+      message: 'You must be authorized to hit this endpoint'
+    });
+  }
+}
+
+
+//GET ENDPOINTS ----------//
 //get all makes
 app.get('/api/v1/makes', (request, response) =>{
   database('makes').select()
@@ -227,10 +287,12 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
     })
 })
 
+//POST ENDPOINTS----------------//
 
+//post a new trim to a specific model by year.
+app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (request, response) =>{
+  let trimData = request.body.trim
 
-app.post('/api/v1/makes/:make_name/models/:model_name/:year/', (request, response) =>{
-  let trimData = request.body
   database('makes').where({
     make_name: request.params.make_name
     }).select()
@@ -286,9 +348,11 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', (request, respons
     })
 })
 
-//add completely new model with year and trim data.
-app.post('/api/v1/makes/:make_name', (request, response) =>{
-  let newModelData = request.body
+//post completely new model with year and trim data.
+app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
+
+  let newModelData = request.body.model
+
   database('makes').where({
     make_name: request.params.make_name
     }).select()
@@ -302,7 +366,7 @@ app.post('/api/v1/makes/:make_name', (request, response) =>{
           year: newModelData.year,
           model_id: model[0]
         }, 'id')
-        .then((year) =>{
+        .then((year) =>{  
           database('trims').insert({
             year_id: year[0],
             trim_id: newModelData.trim_id,
@@ -337,9 +401,13 @@ app.post('/api/v1/makes/:make_name', (request, response) =>{
     })
 })
 
-//put trim data
-app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', (request, response) =>{
+//PUT ENDPOINTS ------------//
+
+//put trim data and update the specific trim data
+app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', checkAuth, (request, response) =>{
+
   let trimUpdate = request.body.trim
+
   database('makes').where({
     make_name: request.params.make_name
     }).select()
@@ -381,9 +449,11 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', (request, 
     })
 })
 
-//update year data
-app.put('/api/v1/makes/:make_name/models/:model_name/:year', (request, response) =>{
+//update year data by model
+app.put('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request, response) =>{
+
   let yearUpdate = request.body.year
+
   database('makes').where({
     make_name: request.params.make_name
     }).select()
@@ -417,8 +487,10 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year', (request, response)
       })
 
 //put update model name
-app.put('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
+app.put('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, response) =>{
+
   let updateModelName = request.body.model_name
+
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       database('models').where('model_name', request.params.model_name).update(updateModelName, 'model_name')
@@ -440,8 +512,10 @@ app.put('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
     })
 })
 
+//DELETE ENDPOINTS ----------//
+
 //delete a model and it's affiliated data.
-app.delete('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
+app.delete('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, response) =>{
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       database('models').where('model_name', request.params.model_name).select()
@@ -471,7 +545,7 @@ app.delete('/api/v1/makes/:make_name/models/:model_name', (request, response) =>
 })
 
 //delete a models's year and it's affiliated data
-app.delete('/api/v1/makes/:make_name/models/:model_name/:year', (request, response) =>{
+app.delete('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request, response) =>{
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       database('models').where('model_name', request.params.model_name).select()
