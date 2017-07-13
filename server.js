@@ -79,7 +79,30 @@ app.get('/api/v1/makes/:make_name/models', (request, response) => {
     })
 })
 
-//get years from make -> model
+//query makes to get models
+app.get('/api/v1/models/', (request, response) => {
+  let query = request.query.q
+  database('makes').where(database.raw('lower("make_name")'), query.toLowerCase())
+    .then((make) => {
+      database('models').where('make_id', make[0].id).select()
+      .then((model)=>{
+        if(model.length){
+          response.status(200).json(model)
+        } else {
+          response.status(404).json({
+            error: '404: No Models Found'
+          })
+        }
+      })
+    })
+    .catch(() => {
+      response.status(500).send({
+        'Error': '500: Internal error retrieving specific make by make_name.'
+      })
+    })
+})
+
+//get years per model
 app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
@@ -102,6 +125,29 @@ app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
         'Error': '500: Internal error retrieving specific make by make_name.'
       })
     })
+})
+
+//query models to get year data.
+app.get('/api/v1/years/', (request, response) =>{
+  let query = request.query.q
+    database('models').where(database.raw('lower("model_name")'), query.toLowerCase())
+    .then((model)=>{
+      database('years').where('model_id', model[0].id).select()
+      .then((year) =>{
+        if(year.length){
+          response.status(200).json(year)
+        } else {
+          response.status(404).json({
+            error: '404: No Years Found per model'
+          })
+        }
+      })
+    })
+  .catch(() => {
+    response.status(500).send({
+      'Error': '500: Internal error retrieving specific year info by make_name.'
+    })
+  })
 })
 
 //get all trims from make -> model -> year
@@ -335,6 +381,41 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', (request, 
     })
 })
 
+//update year data
+app.put('/api/v1/makes/:make_name/models/:model_name/:year', (request, response) =>{
+  let yearUpdate = request.body.year
+  database('makes').where({
+    make_name: request.params.make_name
+    }).select()
+    .then((make) => {
+      database('models').where({
+        model_name: request.params.model_name,
+        make_id: make[0].id
+      }).select()
+      .then((model)=>{
+        database('years').where({
+          year: request.params.year,
+          model_id: model[0].id
+        }).update(yearUpdate, 'year')
+          .then((year)=>{
+              response.status(202).json({
+                'message': `year was updated`
+              })
+            })
+            .catch((error) =>{
+              response.status(404).json({
+                "error": 'Error updating year data'
+              })
+            })
+          })
+        })
+        .catch(() => {
+          response.status(500).send({
+            'Error': '500: Internal error updating specific trim data.'
+          })
+        })
+      })
+
 //put update model name
 app.put('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
   let updateModelName = request.body.model_name
@@ -359,27 +440,63 @@ app.put('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
     })
 })
 
+//delete a model and it's affiliated data.
 app.delete('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
-  let updateModelName = request.body.model_name
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
-      database('models').where('model_name', request.params.model_name).update(updateModelName, 'model_name')
-      .then((model_name) =>{
-        response.status(201).json({
-          model_name
+      database('models').where('model_name', request.params.model_name).select()
+      .then((model) =>{
+        let model_id = model[0].id
+        database('years').where({model_id: model[0].id}).select()
+        .then((years) =>{
+          let year_id = years[0].id
+          database('trims').where({year_id: years[0].id}).select()
+          .then(() => database('trims').where({year_id: year_id}).del())
+          .then(() => database('years').where({model_id: model_id}).del())
+          .then(() => database('models').where({model_name: request.params.model_name}).del())
+        .then((data) =>{
+          response.status(200).json({
+            message: 'Model data and affiliated were deleted.'
+          })
         })
-      })
-      .catch(() => {
-        response.status(404).send({
-          'Error': 'Error, couldn\'t update model name.'
+        .catch((error) =>{
+          response.status(500).json({
+            message: 'Internal error deleting entries associated with model selected.'
+          })
         })
       })
     })
-    .catch(() => {
-      response.status(500).send({
-        'Error': '500: Internal error retrieving specific make by make_name.'
+  })
+  .catch((error) => response.status(500).json({error: 'error deleting content'}))
+})
+
+//delete a models's year and it's affiliated data
+app.delete('/api/v1/makes/:make_name/models/:model_name/:year', (request, response) =>{
+  database('makes').where('make_name', request.params.make_name).select()
+    .then((make) => {
+      database('models').where('model_name', request.params.model_name).select()
+      .then((model) =>{
+        let model_id = model[0].id
+        database('years').where({model_id: model[0].id}).select()
+        .then((years) =>{
+          let year_id = years[0].id
+          database('trims').where({year_id: years[0].id}).select()
+          .then(() => database('trims').where({year_id: year_id}).del())
+          .then(() => database('years').where({model_id: model_id}).del())
+        .then((data) =>{
+          response.status(200).json({
+            message: 'Year data and affiliated trims were deleted.'
+          })
+        })
+        .catch((error) =>{
+          response.status(500).json({
+            message: 'Internal error deleting entries associated with model and year selected.'
+          })
+        })
       })
     })
+  })
+  .catch((error) => response.status(500).json({error: 'error deleting content'}))
 })
 
 
