@@ -107,7 +107,7 @@ app.get('/api/v1/makes/:make_name/', (request, response) => {
     })
   }
 
-  database('makes').where('make_name', request.params.make_name).select()
+  database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
     .then((make) => {
       if(make.length){
         response.status(200).json(make)
@@ -126,7 +126,7 @@ app.get('/api/v1/makes/:make_name/', (request, response) => {
 
 //get models from make
 app.get('/api/v1/makes/:make_name/models', (request, response) => {
-  const make_name = request.params.make_name
+  const make_name = request.params.make_name.toLowerCase()
 
   if (!make_name) {
     return response.status(422).send({
@@ -134,7 +134,7 @@ app.get('/api/v1/makes/:make_name/models', (request, response) => {
     })
   }
 
-  database('makes').where('make_name', request.params.make_name).select()
+  database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
     .then((make) => {
       database('models').where('make_id', make[0].id).select()
       .then((model)=>{
@@ -189,9 +189,9 @@ app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
     })
   }
 
-  database('makes').where('make_name', request.params.make_name).select()
+  database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
     .then((make) => {
-      database('models').where('model_name', request.params.model_name).select()
+      database('models').where('model_name', request.params.model_name.toLowerCase()).select()
       .then((model)=>{
         database('years').where('model_id', model[0].id).select()
         .then((years) =>{
@@ -215,7 +215,7 @@ app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
 //query models to get year data.
 app.get('/api/v1/years/', (request, response) =>{
   let query = request.query.q
-    database('models').where(database.raw(`lower(model_name)`), query.toLowerCase())
+    database('models').where('model_name', query.toLowerCase())
     .then((model)=>{
       database('years').where('model_id', model[0].id).select()
       .then((year) =>{
@@ -250,11 +250,11 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year', (request, response)
   }
 
   database('makes').where({
-    make_name: request.params.make_name
+    make_name: request.params.make_name.toLowerCase()
     }).select()
     .then((make) => {
       database('models').where({
-        model_name: request.params.model_name,
+        model_name: request.params.model_name.toLowerCase(),
         make_id: make[0].id
       }).select()
       .then((model)=>{
@@ -300,11 +300,11 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
   }
 
   database('makes').where({
-    make_name: request.params.make_name
+    make_name: request.params.make_name.toLowerCase()
     }).select()
     .then((make) => {
       database('models').where({
-        model_name: request.params.model_name,
+        model_name: request.params.model_name.toLowerCase(),
         make_id: make[0].id
       }).select()
       .then((model)=>{
@@ -355,11 +355,11 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (reque
   let trimData = request.body.trim
 
   database('makes').where({
-    make_name: request.params.make_name
+    make_name: request.params.make_name.toLowerCase()
     }).select()
     .then((make) => {
       database('models').where({
-        model_name: request.params.model_name,
+        model_name: request.params.model_name.toLowerCase(),
         make_id: make[0].id
       }).select()
       .then((model)=>{
@@ -422,7 +422,7 @@ app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
   let newModelData = request.body.model
 
   database('makes').where({
-    make_name: request.params.make_name
+    make_name: request.params.make_name.toLowerCase()
     }).select()
     .then((make) => {
       database('models').insert({
@@ -488,11 +488,11 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', checkAuth,
   let trimUpdate = request.body.trim
 
   database('makes').where({
-    make_name: request.params.make_name
+    make_name: request.params.make_name.toLowerCase()
     }).select()
     .then((make) => {
       database('models').where({
-        model_name: request.params.model_name,
+        model_name: request.params.model_name.toLowerCase(),
         make_id: make[0].id
       }).select()
       .then((model)=>{
@@ -545,11 +545,11 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request
   let yearUpdate = request.body.year
 
   database('makes').where({
-    make_name: request.params.make_name
+    make_name: request.params.make_name.toLowerCase()
     }).select()
     .then((make) => {
       database('models').where({
-        model_name: request.params.model_name,
+        model_name: request.params.model_name.toLowerCase(),
         make_id: make[0].id
       }).select()
       .then((model)=>{
@@ -592,9 +592,9 @@ app.put('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, resp
 
   let updateModelName = request.body.model_name
 
-  database('makes').where('make_name', request.params.make_name).select()
+  database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
     .then((make) => {
-      database('models').where('model_name', request.params.model_name).update(updateModelName, 'model_name')
+      database('models').where('model_name', request.params.model_name.toLowerCase()).update(updateModelName, 'model_name')
       .then((model_name) =>{
         response.status(201).json({
           model_name
@@ -629,9 +629,9 @@ app.delete('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, r
     }
   }
 
-  database('makes').where('make_name', request.params.make_name).select()
+  database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
     .then((make) => {
-      database('models').where('model_name', request.params.model_name).select()
+      database('models').where('model_name', request.params.model_name.toLowerCase()).select()
       .then((model) =>{
         let model_id = model[0].id
         database('years').where({model_id: model[0].id}).select()
@@ -640,7 +640,7 @@ app.delete('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, r
           database('trims').where({year_id: years[0].id}).select()
           .then(() => database('trims').where({year_id: year_id}).del())
           .then(() => database('years').where({model_id: model_id}).del())
-          .then(() => database('models').where({model_name: request.params.model_name}).del())
+          .then(() => database('models').where({model_name: request.params.model_name.toLowerCase()}).del())
         .then((data) =>{
           response.status(200).json({
             message: 'Model data and affiliated were deleted.'
@@ -671,9 +671,9 @@ app.delete('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (requ
     }
   }
 
-  database('makes').where('make_name', request.params.make_name).select()
+  database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
     .then((make) => {
-      database('models').where('model_name', request.params.model_name).select()
+      database('models').where('model_name', request.params.model_name.toLowerCase()).select()
       .then((model) =>{
         let model_id = model[0].id
         database('years').where({model_id: model[0].id}).select()

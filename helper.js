@@ -46,7 +46,7 @@ class Helper{
                 style: car['Vehicle Style'],
                 highway_mpg: car['highway MPG'],
                 city_mpg: car['city mpg'],
-                msrp: car.MSRP, 
+                msrp: car.MSRP,
               }]
             }]
           }]

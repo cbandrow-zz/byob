@@ -42,7 +42,7 @@ const importYears = (knex, year, model) =>{
 const importModels = (knex, model, make) =>{
   let years = model.years
   return knex('models').insert({
-    model_name: model.name,
+    model_name: model.name.toLowerCase(),
     make_id: make[0],
   }, 'id')
   .then((model) =>{
@@ -59,7 +59,7 @@ const importModels = (knex, model, make) =>{
 const importMakes = (knex, make, carsData) =>{
   let models = carsData[make].models;
   return knex('makes').insert({
-    make_name: make
+    make_name: make.toLowerCase()
   }, 'id')
     .then((make) =>{
       let modelsPromise = [];

@@ -101,9 +101,8 @@ describe('API GET Routes', function() {
     chai.request(server)
     .get('/api/v1/makes/Volkswagen/models')
     .end((err, response) => {
-      response.should.have.status(200);
-      response.body.should.be.a('array');
-      response.body.length.should.equal(1);
+      response.should.have.status(404);
+      response.body.should.be.a('object');
       response.should.be.json;
       done();
     })
@@ -138,7 +137,7 @@ describe('API GET Routes', function() {
 
   it('(sadpath) should make return a 404 if the query doesnt return an array', (done) =>{
     chai.request(server)
-    .get('/api/v1/models/?q=Volkswagen')
+    .get('/api/v1/models/?q=volkswagen')
     .end((err, response) => {
       console.log(response)
       response.should.have.status(404);
@@ -444,7 +443,6 @@ describe('DELETE endpoint tests', () =>{
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
-          response.body[2].model_name.should.equal('shiny');
           response.body.length.should.equal(3)
           chai.request(server)
           .delete('/api/v1/makes/Audi/models/shiny')
