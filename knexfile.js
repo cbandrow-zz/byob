@@ -43,6 +43,9 @@ module.exports = {
     migrations: {
       directory: './db/migrations'
     },
+    seeds: {
+      directory: './db/seed/dev'
+    },
     useNullAsDefault: true
   }
 };
