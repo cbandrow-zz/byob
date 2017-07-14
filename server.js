@@ -106,7 +106,8 @@ app.get('/api/v1/makes/:make_name/', (request, response) => {
       error: `Missing make_name parameter in api request. `
     })
   }
-  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
+
+  database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       if(make.length){
         response.status(200).json(make)
@@ -133,7 +134,7 @@ app.get('/api/v1/makes/:make_name/models', (request, response) => {
     })
   }
 
-  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
+  database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       database('models').where('make_id', make[0].id).select()
       .then((model)=>{
@@ -188,9 +189,9 @@ app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
     })
   }
 
-  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
+  database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
-      database('models').where(database.raw(`lower(model_name)`), model_name.toLowerCase()).select()
+      database('models').where('model_name', request.params.model_name).select()
       .then((model)=>{
         database('years').where('model_id', model[0].id).select()
         .then((years) =>{
@@ -247,19 +248,18 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year', (request, response)
       })
     }
   }
-  const make_name = request.params.make_name
-  const model_name = request.params.model_name
-  const year = request.params.year
 
-  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
+  database('makes').where({
+    make_name: request.params.make_name
+    }).select()
     .then((make) => {
       database('models').where({
-        "lower(model_name)": model_name.toLowerCase(),
+        model_name: request.params.model_name,
         make_id: make[0].id
       }).select()
       .then((model)=>{
         database('years').where({
-          year: year,
+          year: request.params.year,
           model_id: model[0].id
         }).select()
         .then((year) =>{
@@ -298,26 +298,24 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
       })
     }
   }
-  const make_name = request.params.make_name
-  const model_name = request.params.model_name
-  const year = request.params.year
-  const trim_id = request.params.trim_id
 
-  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
+  database('makes').where({
+    make_name: request.params.make_name
+    }).select()
     .then((make) => {
-      database('models').where(database.raw({
-        "lower(model_name)": model_name.toLowerCase(),
+      database('models').where({
+        model_name: request.params.model_name,
         make_id: make[0].id
-      })).select()
+      }).select()
       .then((model)=>{
         database('years').where({
-          year: year,
+          year: request.params.year,
           model_id: model[0].id
         }).select()
         .then((year) =>{
           database('trims').where({
             year_id: year[0].id,
-            trim_id: trim_id
+            trim_id: request.params.id
           }).select()
             .then((trims) =>{
               if(trims.length){
@@ -353,18 +351,20 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (reque
       })
     }
   }
-  const trimData = request.body.trim
-  const { make_name, model_name, year } = request.params
 
-  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
+  let trimData = request.body.trim
+
+  database('makes').where({
+    make_name: request.params.make_name
+    }).select()
     .then((make) => {
-      database('models').where(database.raw({
-        "lower(model_name)": model_name.toLowerCase(),
+      database('models').where({
+        model_name: request.params.model_name,
         make_id: make[0].id
-      })).select()
+      }).select()
       .then((model)=>{
         database('years').where({
-          year: year,
+          year: request.params.year,
           model_id: model[0].id
         }).select()
         .then((year) =>{
@@ -421,7 +421,9 @@ app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
 
   let newModelData = request.body.model
 
-  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
+  database('makes').where({
+    make_name: request.params.make_name
+    }).select()
     .then((make) => {
       database('models').insert({
         model_name: newModelData.model_name,
@@ -484,23 +486,24 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', checkAuth,
   }
 
   let trimUpdate = request.body.trim
-  const { make_name, model_name, year, trim_id } = request.params
 
-  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
+  database('makes').where({
+    make_name: request.params.make_name
+    }).select()
     .then((make) => {
-      database('models').where(database.raw({
-        "lower(model_name)": model_name.toLowerCase(),
+      database('models').where({
+        model_name: request.params.model_name,
         make_id: make[0].id
-      })).select()
+      }).select()
       .then((model)=>{
         database('years').where({
-          year: year,
+          year: request.params.year,
           model_id: model[0].id
         }).select()
         .then((year) =>{
           database('trims').where({
             year_id: year[0].id,
-            trim_id: trim_id
+            trim_id: request.params.trim_id
           })
           .update(trimUpdate, 'id')
               .then((id)=>{
