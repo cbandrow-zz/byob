@@ -160,9 +160,9 @@ app.get('/api/v1/models/', (request, response) => {
     .then((make) => {
       database('models').where('make_id', make[0].id).select()
       .then((model)=>{
-        if(model.length && model[0].model_name !== ''){
+        if(model.length && model[0].model_name !== null){
           response.status(200).json(model)
-        } else if (model[0].model_name === '') {
+        } else if (model[0].model_name === null) {
           response.status(404).json({
             error: '404: No Models Found'
           })

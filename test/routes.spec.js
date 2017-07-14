@@ -140,6 +140,7 @@ describe('API GET Routes', function() {
     chai.request(server)
     .get('/api/v1/models/?q=Volkswagen')
     .end((err, response) => {
+      console.log(response)
       response.should.have.status(404);
       response.should.be.json;
       done();
@@ -358,7 +359,7 @@ describe('PUT tests', () =>{
           response.should.be.json;
           response.body.should.be.a('array');
           response.body[0].should.have.property('msrp');
-          response.body[0].msrp.should.equal(99999999);
+          response.body[0].msrp.should.equal('99999999');
           done();
         })
       })
