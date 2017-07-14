@@ -44,9 +44,9 @@ class Helper{
                 market: car['Market Category'],
                 size: car['Vehicle Size'],
                 style: car['Vehicle Style'],
-                highway_mpg: parseInt(car['highway MPG'],10),
-                city_mpg: parseInt(car['city mpg'],10),
-                msrp: parseInt(car.MSRP, 10)
+                highway_mpg: car['highway MPG'],
+                city_mpg: car['city mpg'],
+                msrp: car.MSRP, 
               }]
             }]
           }]
@@ -81,10 +81,9 @@ class Helper{
                 market: car['Market Category'],
                 size: car['Vehicle Size'],
                 style: car['Vehicle Style'],
-                highway_mpg: parseInt(car['highway MPG'],10),
-                city_mpg: parseInt(car['city mpg'],10),
-                combo_mpg: (parseInt(car['city mpg'], 10) + parseInt(car['highway MPG'], 10))/2,
-                msrp: parseInt(car.MSRP, 10)
+                highway_mpg: car['highway MPG'],
+                city_mpg: car['city mpg'],
+                msrp: car.MSRP
               })
         } else if (modelExists && !yearExists){
           let index = acc[car.Make].models.indexOf(modelExists)
@@ -101,10 +100,9 @@ class Helper{
                 market: car['Market Category'],
                 size: car['Vehicle Size'],
                 style: car['Vehicle Style'],
-                highway_mpg: parseInt(car['highway MPG'],10),
-                city_mpg: parseInt(car['city mpg'],10),
-                combo_mpg: (parseInt(car['city mpg'], 10) + parseInt(car['highway MPG'], 10))/2,
-                msrp: parseInt(car.MSRP, 10)
+                highway_mpg: car['highway MPG'],
+                city_mpg: car['city mpg'],
+                msrp: car.MSRP
               }]
             })
         } else if(!modelExists){
@@ -123,10 +121,9 @@ class Helper{
                 market: car['Market Category'],
                 size: car['Vehicle Size'],
                 style: car['Vehicle Style'],
-                highway_mpg: parseInt(car['highway MPG'],10),
-                city_mpg: parseInt(car['city mpg'],10),
-                combo_mpg: (parseInt(car['city mpg'], 10) + parseInt(car['highway MPG'], 10))/2,
-                msrp: parseInt(car.MSRP, 10)
+                highway_mpg: car['highway MPG'],
+                city_mpg: car['city mpg'],
+                msrp: car.MSRP
               }]
             }]
           })

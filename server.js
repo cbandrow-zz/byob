@@ -24,7 +24,6 @@ if (!process.env.CLIENT_SECRET || !process.env.USERNAME || !process.env.PASSWORD
   throw 'Make sure you have a CLIENT_SECRET, USERNAME, and PASSWORD in your .env file'
 }
 
-
 /////Endpoints/////
 
 //Authentication
@@ -107,8 +106,7 @@ app.get('/api/v1/makes/:make_name/', (request, response) => {
       error: `Missing make_name parameter in api request. `
     })
   }
-
-  database('makes').where('make_name', request.params.make_name).select()
+  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
     .then((make) => {
       if(make.length){
         response.status(200).json(make)
@@ -135,7 +133,7 @@ app.get('/api/v1/makes/:make_name/models', (request, response) => {
     })
   }
 
-  database('makes').where('make_name', request.params.make_name).select()
+  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
     .then((make) => {
       database('models').where('make_id', make[0].id).select()
       .then((model)=>{
@@ -190,9 +188,9 @@ app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
     })
   }
 
-  database('makes').where('make_name', request.params.make_name).select()
+  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
     .then((make) => {
-      database('models').where('model_name', request.params.model_name).select()
+      database('models').where(database.raw(`lower(model_name)`), model_name.toLowerCase()).select()
       .then((model)=>{
         database('years').where('model_id', model[0].id).select()
         .then((years) =>{
