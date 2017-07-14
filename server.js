@@ -155,15 +155,15 @@ app.get('/api/v1/makes/:make_name/models', (request, response) => {
 })
 
 //query makes to get models
-app.get('/api/v1/models/', (request, response) => {
-  let query = request.query.q
-  database('makes').where(database.raw(`lower(make_name)`), query.toLowerCase())
+app.get('/api/v1/search/models', (request, response) => {
+  let query = request.query.q.toLowerCase()
+  database('makes').where('make_name', query).select()
     .then((make) => {
       database('models').where('make_id', make[0].id).select()
       .then((model)=>{
-        if(model.length && model[0].model_name !== null){
+        if(model.length){
           response.status(200).json(model)
-        } else if (model[0].model_name === null) {
+        } else if (!model.length) {
           response.status(404).json({
             error: '404: No Models Found'
           })
@@ -191,18 +191,27 @@ app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
 
   database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
     .then((make) => {
-      database('models').where('model_name', request.params.model_name.toLowerCase()).select()
+      database('models').where({
+        model_name: request.params.model_name,
+        make_id: make[0].id,
+      }).select()
       .then((model)=>{
-        database('years').where('model_id', model[0].id).select()
-        .then((years) =>{
-          if(model.length){
-            response.status(200).json(years)
-          } else {
-            response.status(404).json({
-              error: '404: No Years Found permodel'
-            })
-          }
-        })
+        if(model.length){
+          database('years').where('model_id', model[0].id).select()
+          .then((years) =>{
+            if(years.length){
+              response.status(200).json(years)
+            } else {
+              response.status(404).json({
+                error: '404: No Years Found permodel'
+              })
+            }
+          })
+        } else if (!model.length){
+          response.status(404).json({
+            error: '404: No Models Found permodel'
+          })
+        }
       })
     })
     .catch(() => {
@@ -213,7 +222,7 @@ app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
 })
 
 //query models to get year data.
-app.get('/api/v1/years/', (request, response) =>{
+app.get('/api/v1/search/years', (request, response) =>{
   let query = request.query.q
     database('models').where('model_name', query.toLowerCase())
     .then((model)=>{

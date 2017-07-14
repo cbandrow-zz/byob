@@ -110,7 +110,7 @@ describe('API GET Routes', function() {
 
   it('should make a GET query to get models by a specific query', (done) =>{
     chai.request(server)
-    .get('/api/v1/models/?q=Audi')
+    .get('/api/v1/search/models/?q=Audi')
     .end((err, response) => {
       response.should.have.status(200);
       response.should.be.json;
@@ -127,7 +127,7 @@ describe('API GET Routes', function() {
 
   it('(sadpath) should make return a 500 if the query is not valid', (done) =>{
     chai.request(server)
-    .get('/api/v1/models/?q=randomCar')
+    .get('/api/v1/search/models/?q=randomCar')
     .end((err, response) => {
       response.should.have.status(500);
       response.should.be.json;
@@ -137,7 +137,7 @@ describe('API GET Routes', function() {
 
   it('(sadpath) should make return a 404 if the query doesnt return an array', (done) =>{
     chai.request(server)
-    .get('/api/v1/models/?q=volkswagen')
+    .get('/api/v1/search/models/?q=volkswagen')
     .end((err, response) => {
       console.log(response)
       response.should.have.status(404);
@@ -148,12 +148,12 @@ describe('API GET Routes', function() {
 
   it('should make a GET request to get year data by model', (done) =>{
     chai.request(server)
-    .get('/api/v1/makes/Audi/models/Q7')
+    .get('/api/v1/makes/mazda/models/miata')
     .end((err, response) => {
       response.should.have.status(200);
       response.should.be.json;
       response.body.should.be.a('array');
-      response.body.length.should.equal(1);
+      response.body.length.should.equal(2);
       response.body[0].should.have.property('id');
       response.body[0].should.have.property('year');
       response.body[0].should.have.property('model_id');
@@ -163,9 +163,19 @@ describe('API GET Routes', function() {
     })
   })
 
+  it('(sad path) should return a 404 if no model is found', (done) =>{
+    chai.request(server)
+    .get('/api/v1/makes/Audi/models/A100')
+    .end((err, response) => {
+      response.should.have.status(404);
+      response.should.be.json;
+      done();
+    })
+  })
+
   it('should make a GET query to get years by a specific query', (done) =>{
     chai.request(server)
-    .get('/api/v1/years/?q=124 Spider')
+    .get('/api/v1/search/years/?q=124 Spider')
     .end((err, response) => {
       response.should.have.status(200);
       response.should.be.json;

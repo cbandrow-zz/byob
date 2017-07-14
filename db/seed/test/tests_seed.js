@@ -76,7 +76,6 @@ const importMakes = (knex, make, carsData) =>{
 exports.seed = (knex, Promise) => {
   let carsData = helper.reduceMakes(carData);
   let makesArray = Object.keys(carsData);
-  console.log(carsData)
   return knex('models').del()
     .then(() => knex('makes').del())
     .then(() =>{
