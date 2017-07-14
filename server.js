@@ -247,18 +247,19 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year', (request, response)
       })
     }
   }
+  const make_name = request.params.make_name
+  const model_name = request.params.model_name
+  const year = request.params.year
 
-  database('makes').where({
-    make_name: request.params.make_name
-    }).select()
+  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
     .then((make) => {
       database('models').where({
-        model_name: request.params.model_name,
+        "lower(model_name)": model_name.toLowerCase(),
         make_id: make[0].id
       }).select()
       .then((model)=>{
         database('years').where({
-          year: request.params.year,
+          year: year,
           model_id: model[0].id
         }).select()
         .then((year) =>{
@@ -297,24 +298,26 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
       })
     }
   }
+  const make_name = request.params.make_name
+  const model_name = request.params.model_name
+  const year = request.params.year
+  const trim_id = request.params.trim_id
 
-  database('makes').where({
-    make_name: request.params.make_name
-    }).select()
+  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
     .then((make) => {
-      database('models').where({
-        model_name: request.params.model_name,
+      database('models').where(database.raw({
+        "lower(model_name)": model_name.toLowerCase(),
         make_id: make[0].id
-      }).select()
+      })).select()
       .then((model)=>{
         database('years').where({
-          year: request.params.year,
+          year: year,
           model_id: model[0].id
         }).select()
         .then((year) =>{
           database('trims').where({
             year_id: year[0].id,
-            trim_id: request.params.id
+            trim_id: trim_id
           }).select()
             .then((trims) =>{
               if(trims.length){
@@ -350,20 +353,18 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (reque
       })
     }
   }
+  const trimData = request.body.trim
+  const { make_name, model_name, year } = request.params
 
-  let trimData = request.body.trim
-
-  database('makes').where({
-    make_name: request.params.make_name
-    }).select()
+  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
     .then((make) => {
-      database('models').where({
-        model_name: request.params.model_name,
+      database('models').where(database.raw({
+        "lower(model_name)": model_name.toLowerCase(),
         make_id: make[0].id
-      }).select()
+      })).select()
       .then((model)=>{
         database('years').where({
-          year: request.params.year,
+          year: year,
           model_id: model[0].id
         }).select()
         .then((year) =>{
@@ -420,9 +421,7 @@ app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
 
   let newModelData = request.body.model
 
-  database('makes').where({
-    make_name: request.params.make_name
-    }).select()
+  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
     .then((make) => {
       database('models').insert({
         model_name: newModelData.model_name,
@@ -485,24 +484,23 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', checkAuth,
   }
 
   let trimUpdate = request.body.trim
+  const { make_name, model_name, year, trim_id } = request.params
 
-  database('makes').where({
-    make_name: request.params.make_name
-    }).select()
+  database('makes').where(database.raw(`lower(make_name)`), make_name.toLowerCase()).select()
     .then((make) => {
-      database('models').where({
-        model_name: request.params.model_name,
+      database('models').where(database.raw({
+        "lower(model_name)": model_name.toLowerCase(),
         make_id: make[0].id
-      }).select()
+      })).select()
       .then((model)=>{
         database('years').where({
-          year: request.params.year,
+          year: year,
           model_id: model[0].id
         }).select()
         .then((year) =>{
           database('trims').where({
             year_id: year[0].id,
-            trim_id: request.params.trim_id
+            trim_id: trim_id
           })
           .update(trimUpdate, 'id')
               .then((id)=>{
