@@ -263,69 +263,69 @@ describe('POST tests', () =>{
     .then(() => done());
   });
 
-  // it('should POST a new trim_id.', (done) =>{
-  //     chai.request(server)
-  //     .post('/api/v1/makes/Audi/models/Q7/2014/')
-  //     .set('Authorization', token)
-  //     .send({
-	//        'trim':{
-  //          'fuel_type': 'gasoline',
-  //          'horsepower': '900',
-  //          'cylinders': '12',
-  //          'transmission': 'Manual',
-  //          'drive': 'All Wheel Drive',
-  //          'doors': '2',
-  //          'market': 'High Performance, luxury',
-  //          'size': 'sports car',
-  //          'style': 'sports car',
-  //          'highway_mpg': '45',
-  //          'city_mpg': '32',
-  //          'msrp': '180000'
-	//         }
-  //       })
-  //     .end((err, response) => {
-  //       response.should.have.status(201);
-  //       response.should.be.json;
-  //       done();
-  //     });
-  //   });
-  //
-  // it('should POST a new model based on make.', (done) =>{
-  //     chai.request(server)
-  //     .post('/api/v1/makes/Audi/')
-  //     .set('Authorization', token)
-  //     .send({
-	//        'model':{
-  //          'model_name':'Sweet Model',
-  //          'trim_id':1,
-  //          'year': 2015,
-  //          'fuel_type': 'gasoline',
-  //          'horsepower': 900,
-  //          'cylinders': '12',
-  //          'transmission': 'Manual',
-  //          'drive': 'All Wheel Drive',
-  //          'doors': 2,
-  //          'market': 'High Performance, luxury',
-  //          'size': 'sports car',
-  //          'style': 'sports car',
-  //          'highway_mpg': 45,
-  //          'city_mpg': 32,
-  //          'msrp': 180000
-	//         }
-  //       })
-  //     .end((err, response) => {
-  //       response.should.have.status(201);
-  //       response.should.be.json;
-  //       chai.request(server)
-  //       .get('/api/v1/makes/Audi')
-  //       .end((err, response) => {
-  //         response.should.have.status(200);
-  //         response.should.be.json;
-  //         response.body.should.be.a('array');
-  //         done();
-  //       });
-  //     });
-  //   });
+  it.skip('should POST a new trim_id.', (done) =>{
+      chai.request(server)
+      .post('/api/v1/makes/Audi/models/Q7/2014/')
+      .set('Authorization', token)
+      .send({
+	       'trim':{
+           'fuel_type': 'gasoline',
+           'horsepower': '900',
+           'cylinders': '12',
+           'transmission': 'Manual',
+           'drive': 'All Wheel Drive',
+           'doors': '2',
+           'market': 'High Performance, luxury',
+           'size': 'sports car',
+           'style': 'sports car',
+           'highway_mpg': '45',
+           'city_mpg': '32',
+           'msrp': '180000'
+	        }
+        })
+      .end((err, response) => {
+        response.should.have.status(201);
+        response.should.be.json;
+        done();
+      });
+    });
+
+  it.skip('should POST a new model based on make.', (done) =>{
+      chai.request(server)
+      .post('/api/v1/makes/Audi/')
+      .set('Authorization', token)
+      .send({
+	       'model':{
+           'model_name':'Sweet Model',
+           'trim_id':1,
+           'year': 2015,
+           'fuel_type': 'gasoline',
+           'horsepower': 900,
+           'cylinders': '12',
+           'transmission': 'Manual',
+           'drive': 'All Wheel Drive',
+           'doors': 2,
+           'market': 'High Performance, luxury',
+           'size': 'sports car',
+           'style': 'sports car',
+           'highway_mpg': 45,
+           'city_mpg': 32,
+           'msrp': 180000
+	        }
+        })
+      .end((err, response) => {
+        response.should.have.status(201);
+        response.should.be.json;
+        chai.request(server)
+        .get('/api/v1/makes/Audi')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.be.a('array');
+          done();
+        });
+      });
+    });
 });
 
 describe('PUT tests', () =>{
@@ -348,55 +348,55 @@ describe('PUT tests', () =>{
     .then(() => done());
   });
 
-  // it('should PUT a new trim_id.', (done) =>{
-  //     chai.request(server)
-  //     .put('/api/v1/makes/Audi/models/Q7/2014/1')
-  //     .set('Authorization', token)
-  //     .send({
-	//        'trim':{
-  //          'msrp': 99999999,
-	//         }
-  //       })
-  //     .end((err, response) => {
-  //       response.should.have.status(202);
-  //       response.should.be.json;
-  //       chai.request(server)
-  //       .get('/api/v1/makes/Audi/models/Q7/2014/1')
-  //       .end((err, response) => {
-  //         response.should.have.status(200);
-  //         response.should.be.json;
-  //         response.body.should.be.a('array');
-  //         response.body[0].should.have.property('msrp');
-  //         response.body[0].msrp.should.equal('99999999');
-  //         done();
-  //       });
-  //     });
-  //   });
+  it.skip('should PUT a new trim_id.', (done) =>{
+      chai.request(server)
+      .put('/api/v1/makes/Audi/models/Q7/2014/1')
+      .set('Authorization', token)
+      .send({
+	       'trim':{
+           'msrp': 99999999,
+	        }
+        })
+      .end((err, response) => {
+        response.should.have.status(202);
+        response.should.be.json;
+        chai.request(server)
+        .get('/api/v1/makes/Audi/models/Q7/2014/1')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.be.a('array');
+          response.body[0].should.have.property('msrp');
+          response.body[0].msrp.should.equal('99999999');
+          done();
+        });
+      });
+    });
 
-//   it('should PUT a new trim_id.', (done) =>{
-//       chai.request(server)
-//       .put('/api/v1/makes/Audi/models/Q7')
-//       .set('Authorization', token)
-//       .send({
-// 	       'model_name':{
-//            'model_name': 'RSQ7',
-// 	        }
-//         })
-//       .end((err, response) => {
-//         response.should.have.status(201);
-//         response.should.be.json;
-//         chai.request(server)
-//         .get('/api/v1/makes/Audi/models/')
-//         .end((err, response) => {
-//           response.should.have.status(200);
-//           response.should.be.json;
-//           response.body.should.be.a('array');
-//           response.body[1].model_name.should.equal('RSQ7');
-//           done();
-//         });
-//       });
-//     });
-// });
+  it.skip('should PUT a new trim_id.', (done) =>{
+      chai.request(server)
+      .put('/api/v1/makes/Audi/models/Q7')
+      .set('Authorization', token)
+      .send({
+	       'model_name':{
+           'model_name': 'RSQ7',
+	        }
+        })
+      .end((err, response) => {
+        response.should.have.status(201);
+        response.should.be.json;
+        chai.request(server)
+        .get('/api/v1/makes/Audi/models/')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.be.a('array');
+          response.body[1].model_name.should.equal('RSQ7');
+          done();
+        });
+      });
+    });
+});
 
 describe('DELETE endpoint tests', () =>{
 
@@ -418,57 +418,57 @@ describe('DELETE endpoint tests', () =>{
     .then(() => done());
   });
 
-  // it('should DELETE a model.', (done) =>{
-  //     chai.request(server)
-  //     .post('/api/v1/makes/Audi/')
-  //     .set('Authorization', token)
-  //     .send({
-	//        'model':{
-  //          'model_name':'shiny',
-  //          'trim_id':1,
-  //          'year': 2015,
-  //          'fuel_type': 'gasoline',
-  //          'horsepower': 900,
-  //          'cylinders': '12',
-  //          'transmission': 'Manual',
-  //          'drive': 'All Wheel Drive',
-  //          'doors': 2,
-  //          'market': 'High Performance, luxury',
-  //          'size': 'sports car',
-  //          'style': 'sports car',
-  //          'highway_mpg': 45,
-  //          'city_mpg': 32,
-  //          'msrp': 180000
-	//         }
-  //       })
-  //     .end((err, response) => {
-  //       response.should.have.status(201);
-  //       response.should.be.json;
-  //       chai.request(server)
-  //       .get('/api/v1/makes/Audi/models')
-  //       .end((err, response) => {
-  //         response.should.have.status(200);
-  //         response.should.be.json;
-  //         response.body.should.be.a('array');
-  //         response.body.length.should.equal(3);
-  //         chai.request(server)
-  //         .delete('/api/v1/makes/Audi/models/shiny')
-  //           .set('Authorization', token)
-  //           .end((err, response) =>{
-  //             response.should.have.status(200);
-  //             chai.request(server)
-  //             .get('/api/v1/makes/Audi/models')
-  //             .end((err, response) => {
-  //               response.should.have.status(200);
-  //               response.should.be.json;
-  //               response.body.should.be.a('array');
-  //               response.body.length.should.equal(2);
-  //               done();
-  //           });
-  //         });
-  //       });
-  //     });
-  //   });
+  it.skip('should DELETE a model.', (done) =>{
+      chai.request(server)
+      .post('/api/v1/makes/Audi/')
+      .set('Authorization', token)
+      .send({
+	       'model':{
+           'model_name':'shiny',
+           'trim_id':1,
+           'year': 2015,
+           'fuel_type': 'gasoline',
+           'horsepower': 900,
+           'cylinders': '12',
+           'transmission': 'Manual',
+           'drive': 'All Wheel Drive',
+           'doors': 2,
+           'market': 'High Performance, luxury',
+           'size': 'sports car',
+           'style': 'sports car',
+           'highway_mpg': 45,
+           'city_mpg': 32,
+           'msrp': 180000
+	        }
+        })
+      .end((err, response) => {
+        response.should.have.status(201);
+        response.should.be.json;
+        chai.request(server)
+        .get('/api/v1/makes/Audi/models')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.be.a('array');
+          response.body.length.should.equal(3);
+          chai.request(server)
+          .delete('/api/v1/makes/Audi/models/shiny')
+            .set('Authorization', token)
+            .end((err, response) =>{
+              response.should.have.status(200);
+              chai.request(server)
+              .get('/api/v1/makes/Audi/models')
+              .end((err, response) => {
+                response.should.have.status(200);
+                response.should.be.json;
+                response.body.should.be.a('array');
+                response.body.length.should.equal(2);
+                done();
+            });
+          });
+        });
+      });
+    });
 
     // it('should DELETE a models year information.', (done) =>{
     //   chai.request(server)
