@@ -8,7 +8,7 @@ const chaiHttp = require('chai-http');
 const server = require('../server.js');
 
 
-const token = process.env.TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w';
+const token = process.env.TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE1MDAwNTUwMjEsImV4cCI6MTUwMDY1OTgyMX0.IekHTYTjn6mgVDRHpDPLmV_Ad61Edp5YMSE2W7nxtBo';
 
 chai.use(chaiHttp);
 

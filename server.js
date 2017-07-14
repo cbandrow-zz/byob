@@ -38,7 +38,7 @@ app.post('/api/v1/authenticate', (request, response) =>{
 
     } else {
       let token = jwt.sign(user, app.get('secretKey'), {
-        expiresIn: 604800 // expires in 48 hours
+        expiresIn: 1604800 // expires in week
       });
 
       response.json({
