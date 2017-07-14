@@ -27,7 +27,7 @@ module.exports = {
 
   test: {
     client: 'pg',
-    connection: process.env.DATABASE_URL || 'postgres://localhost/cardata',
+    connection: process.env.DATABASE_URL || 'postgres://localhost/cardatatest',
     useNullAsDefault: true,
     migrations: {
       directory: __dirname +'/db/migrations'

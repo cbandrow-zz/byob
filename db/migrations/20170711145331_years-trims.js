@@ -3,7 +3,7 @@ exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.createTable('years', (table) => {
       table.increments('id').primary()
-      table.string('year')
+      table.integer('year')
       table.integer('model_id').unsigned()
       table.foreign('model_id').references('models.id')
 
@@ -16,11 +16,11 @@ exports.up = function(knex, Promise) {
       table.foreign('year_id').references('years.id')
       table.integer('trim_id')
       table.string('fuel_type')
-      table.string('horsepower')
+      table.integer('horsepower')
       table.string('cylinders')
       table.string('transmission')
       table.string('drive')
-      table.string('doors')
+      table.integer('doors')
       table.string('market')
       table.string('size')
       table.string('style')

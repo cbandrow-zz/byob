@@ -1,4 +1,4 @@
-const carData = require ('../../../data.json')
+const carData = require ('../../../testdata.json')
 const Helper = require('../../../helper')
 
 let helper = new Helper()
@@ -22,8 +22,8 @@ const importMakes = (knex, make, carsData) =>{
 const importModels = (knex, model, make) =>{
   let years = model.years
   return knex('models').insert({
-    model_name: model.name,
-    make_id: make[0],
+    model_name: model.name || '',
+    make_id: make[0] || '',
   }, 'id')
     .then((model) =>{
       let yearsPromise = [];
@@ -39,8 +39,8 @@ const importModels = (knex, model, make) =>{
 const importYears = (knex, year, model) =>{
   let trims = year.trim
   return knex('years').insert({
-    year: parseInt(year.year, 10),
-    model_id: model[0]
+    year: year.year || '',
+    model_id: model[0] || ''
   }, 'id')
     .then((year) =>{
       let trimsPromise = [];
@@ -56,26 +56,25 @@ const importYears = (knex, year, model) =>{
 const importTrims = (knex, trim, year) =>{
   return knex('trims').insert({
     year_id: year[0],
-    trim_id: parseInt(trim.trim_id, 10),
+    trim_id: trim.trim_id,
     fuel_type: trim.fuel_type,
-    horsepower: parseInt(trim.horsepower, 10),
+    horsepower: trim.horsepower,
     cylinders: trim.cylinders,
     transmission: trim.transmission,
     drive: trim.drive,
-    doors: parseInt(trim.doors, 10),
+    doors: trim.doors,
     market: trim.market,
     size: trim.size,
     style: trim.style,
-    highway_mpg: parseInt(trim.highway_mpg, 10),
-    city_mpg: parseInt(trim.city_mpg, 10),
-    msrp: parseInt(trim.msrp, 10)
+    highway_mpg: trim.highway_mpg,
+    city_mpg: trim.city_mpg,
+    msrp: trim.msrp
   })
 }
 
 exports.seed = (knex, Promise) => {
   let carsData = helper.reduceMakes(carData);
   let makesArray = Object.keys(carsData);
-  console.log(carsData)
   return knex('models').del()
     .then(() => knex('makes').del())
     .then(() =>{
