@@ -6,8 +6,8 @@ class Helper{
 
     let addCount = carData.map((car, i) =>{
       car.trim = 1;
-      return car
-    })
+      return car;
+    });
 
     let newCarData = addCount.map((car, i) =>{
       if(parseInt(car.Year, 10) === parseInt(carData[i-count].Year) && car.Model === carData[i-count].Model){
@@ -17,13 +17,13 @@ class Helper{
         count = 0;
         car.trim = 1;
       }
-      return car
-    })
-    return newCarData
+      return car;
+    });
+    return newCarData;
   }
 
   reduceMakes(carData){
-    let trimData = this.addTrims(carData)
+    let trimData = this.addTrims(carData);
 
     let newCarData = trimData.reduce((acc, car)=>{
       if(!acc[car.Make]){
@@ -50,26 +50,26 @@ class Helper{
               }]
             }]
           }]
-        }
+        };
       } else if (acc[car.Make]){
 
         let modelExists = acc[car.Make].models.find((model) =>{
-          return model.name === car.Model
-        })
+          return model.name === car.Model;
+        });
 
-        let indexOfModel = acc[car.Make].models.indexOf(modelExists)
+        let indexOfModel = acc[car.Make].models.indexOf(modelExists);
 
-        let yearExists
+        let yearExists;
 
         acc[car.Make].models.forEach(model =>{
-         yearExists = model.years.find((year)=>{
-           return year.year === car.Year
-         })
-        })
+           yearExists = model.years.find((year)=>{
+             return year.year === car.Year;
+           });
+        });
 
         if(modelExists && yearExists){
-          let modelIndex = acc[car.Make].models.indexOf(modelExists)
-          let yearIndex = acc[car.Make].models[modelIndex].years.indexOf(yearExists)
+          let modelIndex = acc[car.Make].models.indexOf(modelExists);
+          let yearIndex = acc[car.Make].models[modelIndex].years.indexOf(yearExists);
           acc[car.Make].models[modelIndex].years[yearIndex].trim.push({
                 trim_id: car.trim,
                 fuel_type: car['Engine Fuel Type'],
@@ -84,9 +84,9 @@ class Helper{
                 highway_mpg: car['highway MPG'],
                 city_mpg: car['city mpg'],
                 msrp: car.MSRP
-              })
+              });
         } else if (modelExists && !yearExists){
-          let index = acc[car.Make].models.indexOf(modelExists)
+          let index = acc[car.Make].models.indexOf(modelExists);
           acc[car.Make].models[index].years.push({
               year: car.Year,
               trim: [{
@@ -104,7 +104,7 @@ class Helper{
                 city_mpg: car['city mpg'],
                 msrp: car.MSRP
               }]
-            })
+            });
         } else if(!modelExists){
           acc[car.Make].models.push({
             name: car.Model,
@@ -126,14 +126,14 @@ class Helper{
                 msrp: car.MSRP
               }]
             }]
-          })
+          });
         }
       }
-      return acc
-    }, {})
-    return newCarData
+      return acc;
+    }, {});
+    return newCarData;
   }
 
 }
 
-module.exports = Helper
+module.exports = Helper;

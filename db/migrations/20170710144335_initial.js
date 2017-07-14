@@ -2,21 +2,21 @@
 exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.createTable('makes', (table) => {
-      table.increments('id').primary()
-      table.string('make_name')
+      table.increments('id').primary();
+      table.string('make_name');
 
-      table.timestamps(true, true)
+      table.timestamps(true, true);
     }),
 
     knex.schema.createTable('models', (table) => {
-      table.increments('id').primary()
-      table.string('model_name')
-      table.integer('make_id').unsigned()
-      table.foreign('make_id').references('makes.id')
+      table.increments('id').primary();
+      table.string('model_name');
+      table.integer('make_id').unsigned();
+      table.foreign('make_id').references('makes.id');
 
-      table.timestamps(true, true)
+      table.timestamps(true, true);
     })
-  ])
+  ]);
 };
 
 exports.down = (knex, Promise) => {

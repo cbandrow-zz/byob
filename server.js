@@ -1,27 +1,27 @@
 const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
-const bodyParser = require('body-parser')
-const config = require('dotenv').config()
+const bodyParser = require('body-parser');
+const config = require('dotenv').config();
 
-const environment = process.env.NODE_ENV || 'development'
-const configuration = require('./knexfile')[environment]
-const database = require('knex')(configuration)
+const environment = process.env.NODE_ENV || 'development' ;
+const configuration = require('./knexfile')[environment];
+const database = require('knex')(configuration);
 
 app.set('username', process.env.USERNAME);
 app.set('password', process.env.PASSWORD);
 app.set('secretKey', process.env.CLIENT_SECRET);
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.set('port', process.env.PORT || 3000)
-app.locals.title = 'BYOB'
+app.set('port', process.env.PORT || 3000);
+app.locals.title = 'BYOB';
 
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 if (!process.env.CLIENT_SECRET || !process.env.USERNAME || !process.env.PASSWORD) {
-  throw 'Make sure you have a CLIENT_SECRET, USERNAME, and PASSWORD in your .env file'
+  throw 'Make sure you have a CLIENT_SECRET, USERNAME, and PASSWORD in your .env file';
 }
 
 /////Endpoints/////
@@ -29,7 +29,7 @@ if (!process.env.CLIENT_SECRET || !process.env.USERNAME || !process.env.PASSWORD
 //Authentication
 
 app.post('/api/v1/authenticate', (request, response) =>{
-  const user = request.body
+  const user = request.body;
   if (user.username !== config.USERNAME || user.password !== config.PASSWORD) {
     response.status(403).send({
       success: false,
@@ -47,7 +47,7 @@ app.post('/api/v1/authenticate', (request, response) =>{
         token: token
       });
     }
-})
+});
 
 const checkAuth  = (request, response, next) =>{
 
@@ -72,7 +72,7 @@ const checkAuth  = (request, response, next) =>{
       message: 'You must be authorized to hit this endpoint'
     });
   }
-}
+};
 
 
 //GET ENDPOINTS ----------//
@@ -81,11 +81,11 @@ app.get('/api/v1/makes', (request, response) =>{
   database('makes').select()
   .then((makes)=>{
     if(makes.length){
-        response.status(200).json(makes)
+        response.status(200).json(makes);
       } else {
         response.status(404).json({
           error: ' 404: No Makes Found'
-        })
+        });
       }
     })
     .catch(() => {
@@ -93,45 +93,45 @@ app.get('/api/v1/makes', (request, response) =>{
         {
           'Error':'500: Internal error retrieving specific all models.'
         }
-      )
-    })
-  })
+      );
+    });
+  });
 
 //get specific make
 app.get('/api/v1/makes/:make_name/', (request, response) => {
-  const make_name = request.params.make_name
+  const make_name = request.params.make_name;
 
   if (!make_name) {
     return response.status(422).send({
       error: `Missing make_name parameter in api request. `
-    })
+    });
   }
 
   database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
     .then((make) => {
       if(make.length){
-        response.status(200).json(make)
+        response.status(200).json(make);
       } else {
         response.status(404).json({
           error: '404: No Makes Found'
-        })
+        });
       }
     })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error retrieving specific make by make_name.'
-      })
-    })
-})
+      });
+    });
+});
 
 //get models from make
 app.get('/api/v1/makes/:make_name/models', (request, response) => {
-  const make_name = request.params.make_name.toLowerCase()
+  const make_name = request.params.make_name.toLowerCase();
 
   if (!make_name) {
     return response.status(422).send({
       error: `Missing make_name parameter in api request.`
-    })
+    });
   }
 
   database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
@@ -139,54 +139,54 @@ app.get('/api/v1/makes/:make_name/models', (request, response) => {
       database('models').where('make_id', make[0].id).select()
       .then((model)=>{
         if(model.length){
-          response.status(200).json(model)
+          response.status(200).json(model);
         } else {
           response.status(404).json({
             error: '404: No Models Found'
-          })
+          });
         }
-      })
+      });
     })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error retrieving specific make by make_name.'
-      })
-    })
-})
+      });
+    });
+});
 
 //query makes to get models
 app.get('/api/v1/search/models', (request, response) => {
-  let query = request.query.q.toLowerCase()
+  let query = request.query.q.toLowerCase();
   database('makes').where('make_name', query).select()
     .then((make) => {
       database('models').where('make_id', make[0].id).select()
       .then((model)=>{
         if(model.length){
-          response.status(200).json(model)
+          response.status(200).json(model);
         } else if (!model.length) {
           response.status(404).json({
             error: '404: No Models Found'
-          })
+          });
         }
-      })
+      });
     })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error retrieving specific make by make_name.'
-      })
-    })
-})
+      });
+    });
+});
 
 //get years per model
 app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
 
-  const model_name = request.params.model_name
-  const make_name = request.params.make_name
+  const model_name = request.params.model_name;
+  const make_name = request.params.make_name;
 
   if (!make_name) {
     return response.status(422).send({
       error: `Missing make_name parameter in api request.`
-    })
+    });
   }
 
   database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
@@ -200,49 +200,49 @@ app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
           database('years').where('model_id', model[0].id).select()
           .then((years) =>{
             if(years.length){
-              response.status(200).json(years)
+              response.status(200).json(years);
             } else {
               response.status(404).json({
                 error: '404: No Years Found permodel'
-              })
+              });
             }
-          })
+          });
         } else if (!model.length){
           response.status(404).json({
             error: '404: No Models Found permodel'
-          })
+          });
         }
-      })
+      });
     })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error retrieving specific make by make_name.'
-      })
-    })
-})
+      });
+    });
+});
 
 //query models to get year data.
 app.get('/api/v1/search/years', (request, response) =>{
-  let query = request.query.q
+  let query = request.query.q;
     database('models').where('model_name', query.toLowerCase())
     .then((model)=>{
       database('years').where('model_id', model[0].id).select()
       .then((year) =>{
         if(year.length){
-          response.status(200).json(year)
+          response.status(200).json(year);
         } else {
           response.status(404).json({
             error: '404: No Years Found per model'
-          })
+          });
         }
-      })
+      });
     })
   .catch(() => {
     response.status(500).send({
       'Error': '500: Internal error retrieving specific year info by make_name.'
-    })
-  })
-})
+    });
+  });
+});
 
 //get all trims from make -> model -> year
 app.get('/api/v1/makes/:make_name/models/:model_name/:year', (request, response) =>{
@@ -254,7 +254,7 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year', (request, response)
       return response.status(422).json({
         error: `Expected format requires a Make Name, a Model Name, and a Year.
         You are missing a ${requiredParameter} property`
-      })
+      });
     }
   }
 
@@ -277,22 +277,22 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year', (request, response)
           }).select()
             .then((trims) =>{
               if(trims.length){
-                response.status(200).json(trims)
+                response.status(200).json(trims);
               } else {
                 response.status(404).json({
                   error: '404: No Trims Found Per Year Per Model'
-                })
+                });
               }
-          })
-        })
-      })
+          });
+        });
+      });
     })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error retrieving specific trim data.'
-      })
-    })
-})
+      });
+    });
+});
 
 //get specific trim by trim id
 app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, response) =>{
@@ -304,7 +304,7 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
       return response.status(422).json({
         error: `Expected format requires a Make Name, a Model Name, a Year, and Trim Id.
         You are missing a ${requiredParameter} property`
-      })
+      });
     }
   }
 
@@ -328,22 +328,22 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
           }).select()
             .then((trims) =>{
               if(trims.length){
-                response.status(200).json(trims)
+                response.status(200).json(trims);
               } else {
                 response.status(404).json({
                   error: '404: No Trims Found Per Year Per Model'
-                })
+                });
               }
-          })
-        })
-      })
+          });
+        });
+      });
     })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error retrieving specific trim data.'
-      })
-    })
-})
+      });
+    });
+});
 
 //POST ENDPOINTS----------------//
 
@@ -357,11 +357,11 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (reque
       return response.status(422).json({
         error: `Expected format requires a Make Name, a Model Name, and a Year.
         You are missing a ${requiredParameter} property`
-      })
+      });
     }
   }
 
-  let trimData = request.body.trim
+  let trimData = request.body.trim;
 
   database('makes').where({
     make_name: request.params.make_name.toLowerCase()
@@ -377,12 +377,12 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (reque
           model_id: model[0].id
         }).select()
         .then((year) =>{
-          let yearId = year[0].id
+          let yearId = year[0].id;
           database('trims').where({
             year_id: year[0].id,
           }).select()
             .then((trims) =>{
-              let incrementedTrim = trims[0].id + 1
+              let incrementedTrim = trims[0].id + 1;
               database('trims').insert({
                 year_id: yearId,
                 trim_id: incrementedTrim,
@@ -400,35 +400,35 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (reque
                 msrp: trimData.msrp
               })
               .then(()=>{
-                response.status(201).json(trims)
+                response.status(201).json(trims);
               })
               .catch(() =>{
                 response.status(402).json({
                   error: 'Error posting a new trim'
-                })
-              })
-          })
-        })
-      })
+                });
+              });
+          });
+        });
+      });
     })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error posting specific trim data.'
-      })
-    })
-})
+      });
+    });
+});
 
 //post completely new model with year and trim data.
 app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
-  let make_name = request.params.make_name
+  let make_name = request.params.make_name;
     if(!make_name){
       return response.status(422).json({
         error: `Expected format requires a Make Name, a Model Name, and a Year.
         You are missing a ${make_name} property`
-      })
+      });
     }
 
-  let newModelData = request.body.model
+  let newModelData = request.body.model;
 
   database('makes').where({
     make_name: request.params.make_name.toLowerCase()
@@ -461,22 +461,22 @@ app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
             msrp: newModelData.msrp
           }).select()
               .then((trims)=>{
-                response.status(201).json(trims)
+                response.status(201).json(trims);
               })
               .catch(() =>{
                 response.status(402).json({
                   error: 'Error posting a new trim'
-              })
-          })
-        })
-      })
+              });
+          });
+        });
+      });
     })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error posting detailed model data.'
-      })
-    })
-})
+      });
+    });
+});
 
 //PUT ENDPOINTS ------------//
 
@@ -490,11 +490,11 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', checkAuth,
       return response.status(422).json({
         error: `Expected format requires a Make Name, a Model Name, a Year, and Trim ID.
         You are missing a ${requiredParameter} property`
-      })
+      });
     }
   }
 
-  let trimUpdate = request.body.trim
+  let trimUpdate = request.body.trim;
 
   database('makes').where({
     make_name: request.params.make_name.toLowerCase()
@@ -519,23 +519,23 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year/:trim_id', checkAuth,
                 response.status(202).json({
                   id,
                   'message': `${id} was updated`
-                })
+                });
               })
               .catch((error) =>{
                 response.status(404).json({
                   error,
                   'message': 'Error updating trim data'
-                })
-              })
-          })
-        })
+                });
+              });
+          });
+        });
       })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error updating specific trim data.'
-      })
-    })
-})
+      });
+    });
+});
 
 //update year data by model
 app.put('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request, response) =>{
@@ -547,11 +547,11 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request
       return response.status(422).json({
         error: `Expected format requires a Make Name, a Model Name, and a Year.
         You are missing a ${requiredParameter} property`
-      })
+      });
     }
   }
 
-  let yearUpdate = request.body.year
+  let yearUpdate = request.body.year;
 
   database('makes').where({
     make_name: request.params.make_name.toLowerCase()
@@ -569,21 +569,21 @@ app.put('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request
           .then((year)=>{
               response.status(202).json({
                 'message': `year was updated`
-              })
+              });
             })
             .catch((error) =>{
               response.status(404).json({
                 'error': 'Error updating year data'
-              })
-            })
-          })
+              });
+            });
+          });
         })
         .catch(() => {
           response.status(500).send({
             'Error': '500: Internal error updating specific trim data.'
-          })
-        })
-      })
+          });
+        });
+      });
 
 //put update model name
 app.put('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, response) =>{
@@ -595,11 +595,11 @@ app.put('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, resp
       return response.status(422).json({
         error: `Expected format requires a Make Name and Model Name.
         You are missing a ${requiredParameter} property`
-      })
+      });
     }
   }
 
-  let updateModelName = request.body.model_name
+  let updateModelName = request.body.model_name;
 
   database('makes').where('make_name', request.params.make_name.toLowerCase()).select()
     .then((make) => {
@@ -607,20 +607,20 @@ app.put('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, resp
       .then((model_name) =>{
         response.status(201).json({
           model_name
-        })
+        });
       })
       .catch(() => {
         response.status(404).send({
           'Error': 'Error, couldn\'t update model name.'
-        })
-      })
+        });
+      });
     })
     .catch(() => {
       response.status(500).send({
         'Error': '500: Internal error retrieving specific make by make_name.'
-      })
-    })
-})
+      });
+    });
+});
 
 //DELETE ENDPOINTS ----------//
 
@@ -634,7 +634,7 @@ app.delete('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, r
       return response.status(422).json({
         error: `Expected format requires a Make Name and Model Name.
         You are missing a ${requiredParameter} property`
-      })
+      });
     }
   }
 
@@ -642,10 +642,10 @@ app.delete('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, r
     .then((make) => {
       database('models').where('model_name', request.params.model_name.toLowerCase()).select()
       .then((model) =>{
-        let model_id = model[0].id
+        let model_id = model[0].id;
         database('years').where({model_id: model[0].id}).select()
         .then((years) =>{
-          let year_id = years[0].id
+          let year_id = years[0].id;
           database('trims').where({year_id: years[0].id}).select()
           .then(() => database('trims').where({year_id: year_id}).del())
           .then(() => database('years').where({model_id: model_id}).del())
@@ -653,18 +653,18 @@ app.delete('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, r
         .then((data) =>{
           response.status(200).json({
             message: 'Model data and affiliated were deleted.'
-          })
+          });
         })
         .catch((error) =>{
           response.status(500).json({
             message: 'Internal error deleting entries associated with model selected.'
-          })
-        })
-      })
-    })
+          });
+        });
+      });
+    });
   })
-  .catch((error) => response.status(500).json({error: 'error deleting content'}))
-})
+  .catch((error) => response.status(500).json({error: 'error deleting content'}));
+});
 
 //delete a models's year and it's affiliated data
 app.delete('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (request, response) =>{
@@ -676,7 +676,7 @@ app.delete('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (requ
       return response.status(422).json({
         error: `Expected format requires a Make Name, a Model Name, and a Year.
         You are missing a ${requiredParameter} property`
-      })
+      });
     }
   }
 
@@ -684,33 +684,33 @@ app.delete('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (requ
     .then((make) => {
       database('models').where('model_name', request.params.model_name.toLowerCase()).select()
       .then((model) =>{
-        let model_id = model[0].id
+        let model_id = model[0].id;
         database('years').where({model_id: model[0].id}).select()
         .then((years) =>{
-          let year_id = years[0].id
+          let year_id = years[0].id;
           database('trims').where({year_id: years[0].id}).select()
           .then(() => database('trims').where({year_id: year_id}).del())
           .then(() => database('years').where({model_id: model_id}).del())
         .then((data) =>{
           response.status(200).json({
             message: 'Year data and affiliated trims were deleted.'
-          })
+          });
         })
         .catch((error) =>{
           response.status(500).json({
             message: 'Internal error deleting entries associated with model and year selected.'
-          })
-        })
-      })
-    })
+          });
+        });
+      });
+    });
   })
-  .catch((error) => response.status(500).json({error: 'error deleting content'}))
-})
+  .catch((error) => response.status(500).json({error: 'error deleting content'}));
+});
 
 
 
 app.listen(app.get('port'), () => {
-  console.log(`${app.locals.title} is running on ${app.get('port')}.`)
-})
+  console.log(`${app.locals.title} is running on ${app.get('port')}.`);
+});
 
 module.exports = app;

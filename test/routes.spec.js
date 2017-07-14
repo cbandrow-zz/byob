@@ -1,7 +1,7 @@
 /*jshint expr:true*/
 process.env.NODE_ENV = 'test';
 
-var knex = require('../db/knex')
+var knex = require('../db/knex');
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
@@ -42,8 +42,8 @@ describe('API GET Routes', function() {
         response.body[0].should.have.property('created_at');
         response.body[0].should.have.property('updated_at');
         done();
-      })
-    })
+      });
+    });
   it('should GET all models by a specific make_name', (done) =>{
     chai.request(server)
     .get('/api/v1/makes/Audi')
@@ -57,8 +57,8 @@ describe('API GET Routes', function() {
       response.body[0].should.have.property('created_at');
       response.body[0].should.have.property('updated_at');
       done();
-    })
-  })
+    });
+  });
 
   it('(sad path) should GET a status code 404 model is not found', (done) =>{
     chai.request(server)
@@ -67,8 +67,8 @@ describe('API GET Routes', function() {
       response.should.have.status(404);
       response.should.be.json;
       done();
-    })
-  })
+    });
+  });
 
   it('should GET all models by a specific make_name', (done) =>{
     chai.request(server)
@@ -84,8 +84,8 @@ describe('API GET Routes', function() {
       response.body[0].should.have.property('created_at');
       response.body[0].should.have.property('updated_at');
       done();
-    })
-  })
+    });
+  });
 
   it('(sad path) should return a 500 if no the make is invalid', (done) =>{
     chai.request(server)
@@ -94,8 +94,8 @@ describe('API GET Routes', function() {
       response.should.have.status(500);
       response.should.be.json;
       done();
-    })
-  })
+    });
+  });
 
   it('(sad path) should return a 404 if no models found', (done) =>{
     chai.request(server)
@@ -105,8 +105,8 @@ describe('API GET Routes', function() {
       response.body.should.be.a('object');
       response.should.be.json;
       done();
-    })
-  })
+    });
+  });
 
   it('should make a GET query to get models by a specific query', (done) =>{
     chai.request(server)
@@ -122,8 +122,8 @@ describe('API GET Routes', function() {
       response.body[0].should.have.property('created_at');
       response.body[0].should.have.property('updated_at');
       done();
-    })
-  })
+    });
+  });
 
   it('(sadpath) should make return a 500 if the query is not valid', (done) =>{
     chai.request(server)
@@ -132,19 +132,18 @@ describe('API GET Routes', function() {
       response.should.have.status(500);
       response.should.be.json;
       done();
-    })
-  })
+    });
+  });
 
   it('(sadpath) should make return a 404 if the query doesnt return an array', (done) =>{
     chai.request(server)
     .get('/api/v1/search/models/?q=volkswagen')
     .end((err, response) => {
-      console.log(response)
       response.should.have.status(404);
       response.should.be.json;
       done();
-    })
-  })
+    });
+  });
 
   it('should make a GET request to get year data by model', (done) =>{
     chai.request(server)
@@ -160,8 +159,8 @@ describe('API GET Routes', function() {
       response.body[0].should.have.property('created_at');
       response.body[0].should.have.property('updated_at');
       done();
-    })
-  })
+    });
+  });
 
   it('(sad path) should return a 404 if no model is found', (done) =>{
     chai.request(server)
@@ -170,8 +169,8 @@ describe('API GET Routes', function() {
       response.should.have.status(404);
       response.should.be.json;
       done();
-    })
-  })
+    });
+  });
 
   it('should make a GET query to get years by a specific query', (done) =>{
     chai.request(server)
@@ -185,8 +184,8 @@ describe('API GET Routes', function() {
       response.body[0].should.have.property('created_at');
       response.body[0].should.have.property('updated_at');
       done();
-    })
-  })
+    });
+  });
 
   it('should make a GET request to get Trim data by year', (done) =>{
     chai.request(server)
@@ -211,8 +210,8 @@ describe('API GET Routes', function() {
       response.body[0].should.have.property('city_mpg');
       response.body[0].should.have.property('msrp');
       done();
-    })
-  })
+    });
+  });
 
   it('should make a GET request to get Trim data', (done) =>{
     chai.request(server)
@@ -237,13 +236,13 @@ describe('API GET Routes', function() {
       response.body[0].should.have.property('city_mpg');
       response.body[0].should.have.property('msrp');
       done();
-    })
-  })
+    });
+  });
 });
 
 describe('POST tests', () =>{
 
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w'
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w';
 
   before((done)=> {
     knex.migrate.rollback()
@@ -287,8 +286,8 @@ describe('POST tests', () =>{
         response.should.have.status(201);
         response.should.be.json;
         done();
-      })
-    })
+      });
+    });
 
   it('should POST a new model based on make.', (done) =>{
       chai.request(server)
@@ -323,13 +322,13 @@ describe('POST tests', () =>{
           response.should.be.json;
           response.body.should.be.a('array');
           done();
-        })
-      })
-    })
-})
+        });
+      });
+    });
+});
 
 describe('PUT tests', () =>{
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w'
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w';
 
   before((done)=> {
     knex.migrate.rollback()
@@ -370,9 +369,9 @@ describe('PUT tests', () =>{
           response.body[0].should.have.property('msrp');
           response.body[0].msrp.should.equal('99999999');
           done();
-        })
-      })
-    })
+        });
+      });
+    });
 
   it('should PUT a new trim_id.', (done) =>{
       chai.request(server)
@@ -394,14 +393,14 @@ describe('PUT tests', () =>{
           response.body.should.be.a('array');
           response.body[1].model_name.should.equal('RSQ7');
           done();
-        })
-      })
-    })
-})
+        });
+      });
+    });
+});
 
 describe('DELETE endpoint tests', () =>{
 
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w'
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w';
 
   before((done)=> {
     knex.migrate.rollback()
@@ -453,7 +452,7 @@ describe('DELETE endpoint tests', () =>{
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
-          response.body.length.should.equal(3)
+          response.body.length.should.equal(3);
           chai.request(server)
           .delete('/api/v1/makes/Audi/models/shiny')
             .set('Authorization', token)
@@ -465,13 +464,13 @@ describe('DELETE endpoint tests', () =>{
                 response.should.have.status(200);
                 response.should.be.json;
                 response.body.should.be.a('array');
-                response.body.length.should.equal(2)
+                response.body.length.should.equal(2);
                 done();
-            })
-          })
-        })
-      })
-    })
+            });
+          });
+        });
+      });
+    });
 
     // it('should DELETE a models year information.', (done) =>{
     //   chai.request(server)
@@ -499,4 +498,4 @@ describe('DELETE endpoint tests', () =>{
     //     })
     //   })
     // })
-})
+});
