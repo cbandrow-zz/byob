@@ -7,10 +7,10 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 const server = require('../server.js');
 
-server.set('token', token)
 
 const token = process.env.TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w';
 
+server.set('token', token);
 chai.use(chaiHttp);
 
 describe('API GET Routes', function() {
