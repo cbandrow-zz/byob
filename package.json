@@ -21,6 +21,10 @@
     "jshint": "^2.9.5",
     "jsonwebtoken": "^7.4.1",
     "knex": "^0.13.0",
+    "validate-nlf": "https://github.com/cbandrow/jet-fuel-validation",
     "pg": "^6.4.0"
-  }
+  },
+  "pre-commit": [
+    "lint"
+  ]
 }
