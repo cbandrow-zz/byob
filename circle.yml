@@ -5,8 +5,8 @@ machine:
     version: 7.10.0
 
   test:
-    override:
-      - echo "done"
+  override:
+    - "true"
 
   environment:
     DATABASE_URL: postgresql://ubuntu:@127.0.0.1:5432/circle_test
