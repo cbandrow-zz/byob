@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-const config = require('dotenv').config();
+
+const config = require('dotenv').config({path: __dirname + '/.env'});
 
 const environment = process.env.NODE_ENV || 'development' ;
 const configuration = require('./knexfile')[environment];
