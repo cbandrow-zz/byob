@@ -39,14 +39,14 @@ class Helper{
                 horsepower: car['Engine HP'],
                 cylinders: car['Engine Cylinders'],
                 transmission: car['Transmission Type'],
-                drive: car['Driven_Wheels'],
+                drive: car.Driven_Wheels,
                 doors: car['Number of Doors'],
                 market: car['Market Category'],
                 size: car['Vehicle Size'],
                 style: car['Vehicle Style'],
                 highway_mpg: parseInt(car['highway MPG'],10),
                 city_mpg: parseInt(car['city mpg'],10),
-                msrp: parseInt(car['MSRP'], 10)
+                msrp: parseInt(car.MSRP, 10)
               }]
             }]
           }]
@@ -76,7 +76,7 @@ class Helper{
                 horsepower: car['Engine HP'],
                 cylinders: car['Engine Cylinders'],
                 transmission: car['Transmission Type'],
-                drive: car['Driven_Wheels'],
+                drive: car.Driven_Wheels,
                 doors: car['Number of Doors'],
                 market: car['Market Category'],
                 size: car['Vehicle Size'],
@@ -84,7 +84,7 @@ class Helper{
                 highway_mpg: parseInt(car['highway MPG'],10),
                 city_mpg: parseInt(car['city mpg'],10),
                 combo_mpg: (parseInt(car['city mpg'], 10) + parseInt(car['highway MPG'], 10))/2,
-                msrp: parseInt(car['MSRP'], 10)
+                msrp: parseInt(car.MSRP, 10)
               })
         } else if (modelExists && !yearExists){
           let index = acc[car.Make].models.indexOf(modelExists)
@@ -96,7 +96,7 @@ class Helper{
                 horsepower: car['Engine HP'],
                 cylinders: car['Engine Cylinders'],
                 transmission: car['Transmission Type'],
-                drive: car['Driven_Wheels'],
+                drive: car.Driven_Wheels,
                 doors: car['Number of Doors'],
                 market: car['Market Category'],
                 size: car['Vehicle Size'],
@@ -104,7 +104,7 @@ class Helper{
                 highway_mpg: parseInt(car['highway MPG'],10),
                 city_mpg: parseInt(car['city mpg'],10),
                 combo_mpg: (parseInt(car['city mpg'], 10) + parseInt(car['highway MPG'], 10))/2,
-                msrp: parseInt(car['MSRP'], 10)
+                msrp: parseInt(car.MSRP, 10)
               }]
             })
         } else if(!modelExists){
@@ -118,7 +118,7 @@ class Helper{
                 horsepower: car['Engine HP'],
                 cylinders: car['Engine Cylinders'],
                 transmission: car['Transmission Type'],
-                drive: car['Driven_Wheels'],
+                drive: car.Driven_Wheels,
                 doors: car['Number of Doors'],
                 market: car['Market Category'],
                 size: car['Vehicle Size'],
@@ -126,7 +126,7 @@ class Helper{
                 highway_mpg: parseInt(car['highway MPG'],10),
                 city_mpg: parseInt(car['city mpg'],10),
                 combo_mpg: (parseInt(car['city mpg'], 10) + parseInt(car['highway MPG'], 10))/2,
-                msrp: parseInt(car['MSRP'], 10)
+                msrp: parseInt(car.MSRP, 10)
               }]
             }]
           })

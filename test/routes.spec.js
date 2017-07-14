@@ -1,3 +1,4 @@
+/*jshint expr:true*/
 process.env.NODE_ENV = 'test';
 
 var knex = require('../db/knex')
@@ -232,7 +233,7 @@ describe('API GET Routes', function() {
 
 describe('POST tests', () =>{
 
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w"
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w'
 
   before((done)=> {
     knex.migrate.rollback()
@@ -257,19 +258,19 @@ describe('POST tests', () =>{
       .post('/api/v1/makes/Audi/models/Q7/2014/')
       .set('Authorization', token)
       .send({
-	       "trim":{
-           "fuel_type": "gasoline",
-           "horsepower": "900",
-           "cylinders": "12",
-           "transmission": "Manual",
-           "drive": "All Wheel Drive",
-           "doors": "2",
-           "market": "High Performance, luxury",
-           "size": "sports car",
-           "style": "sports car",
-           "highway_mpg": "45",
-           "city_mpg": "32",
-           "msrp": "180000"
+	       'trim':{
+           'fuel_type': 'gasoline',
+           'horsepower': '900',
+           'cylinders': '12',
+           'transmission': 'Manual',
+           'drive': 'All Wheel Drive',
+           'doors': '2',
+           'market': 'High Performance, luxury',
+           'size': 'sports car',
+           'style': 'sports car',
+           'highway_mpg': '45',
+           'city_mpg': '32',
+           'msrp': '180000'
 	        }
         })
       .end((err, response) => {
@@ -284,22 +285,22 @@ describe('POST tests', () =>{
       .post('/api/v1/makes/Audi/')
       .set('Authorization', token)
       .send({
-	       "model":{
-           "model_name":"Sweet Model",
-           "trim_id":1,
-           "year": 2015,
-           "fuel_type": "gasoline",
-           "horsepower": 900,
-           "cylinders": "12",
-           "transmission": "Manual",
-           "drive": "All Wheel Drive",
-           "doors": 2,
-           "market": "High Performance, luxury",
-           "size": "sports car",
-           "style": "sports car",
-           "highway_mpg": 45,
-           "city_mpg": 32,
-           "msrp": 180000
+	       'model':{
+           'model_name':'Sweet Model',
+           'trim_id':1,
+           'year': 2015,
+           'fuel_type': 'gasoline',
+           'horsepower': 900,
+           'cylinders': '12',
+           'transmission': 'Manual',
+           'drive': 'All Wheel Drive',
+           'doors': 2,
+           'market': 'High Performance, luxury',
+           'size': 'sports car',
+           'style': 'sports car',
+           'highway_mpg': 45,
+           'city_mpg': 32,
+           'msrp': 180000
 	        }
         })
       .end((err, response) => {
@@ -318,7 +319,7 @@ describe('POST tests', () =>{
 })
 
 describe('PUT tests', () =>{
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w"
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w'
 
   before((done)=> {
     knex.migrate.rollback()
@@ -343,8 +344,8 @@ describe('PUT tests', () =>{
       .put('/api/v1/makes/Audi/models/Q7/2014/1')
       .set('Authorization', token)
       .send({
-	       "trim":{
-           "msrp": 99999999,
+	       'trim':{
+           'msrp': 99999999,
 	        }
         })
       .end((err, response) => {
@@ -368,12 +369,12 @@ describe('PUT tests', () =>{
       .put('/api/v1/makes/Audi/models/Q7')
       .set('Authorization', token)
       .send({
-	       "model_name":{
-           "model_name": "RSQ7",
+	       'model_name':{
+           'model_name': 'RSQ7',
 	        }
         })
       .end((err, response) => {
-        response.should.have.status(202);
+        response.should.have.status(201);
         response.should.be.json;
         chai.request(server)
         .get('/api/v1/makes/Audi/models/')
@@ -390,7 +391,7 @@ describe('PUT tests', () =>{
 
 describe('DELETE endpoint tests', () =>{
 
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w"
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcm5lcmQiLCJwYXNzd29yZCI6InRoZWFuc3dlcmlzYWx3YXlzbWlhdGEiLCJpYXQiOjE0OTk5ODA3MjUsImV4cCI6MTUwMDU4NTUyNX0.xuxNJbRx-StC1NML6rQU_kyewvk3peGN5CRfO27Uj_w'
 
   before((done)=> {
     knex.migrate.rollback()
@@ -415,22 +416,22 @@ describe('DELETE endpoint tests', () =>{
       .post('/api/v1/makes/Audi/')
       .set('Authorization', token)
       .send({
-	       "model":{
-           "model_name":"shiny",
-           "trim_id":1,
-           "year": 2015,
-           "fuel_type": "gasoline",
-           "horsepower": 900,
-           "cylinders": "12",
-           "transmission": "Manual",
-           "drive": "All Wheel Drive",
-           "doors": 2,
-           "market": "High Performance, luxury",
-           "size": "sports car",
-           "style": "sports car",
-           "highway_mpg": 45,
-           "city_mpg": 32,
-           "msrp": 180000
+	       'model':{
+           'model_name':'shiny',
+           'trim_id':1,
+           'year': 2015,
+           'fuel_type': 'gasoline',
+           'horsepower': 900,
+           'cylinders': '12',
+           'transmission': 'Manual',
+           'drive': 'All Wheel Drive',
+           'doors': 2,
+           'market': 'High Performance, luxury',
+           'size': 'sports car',
+           'style': 'sports car',
+           'highway_mpg': 45,
+           'city_mpg': 32,
+           'msrp': 180000
 	        }
         })
       .end((err, response) => {
@@ -448,7 +449,7 @@ describe('DELETE endpoint tests', () =>{
           .delete('/api/v1/makes/Audi/models/shiny')
             .set('Authorization', token)
             .end((err, response) =>{
-              response.should.have.status(204);
+              response.should.have.status(200);
               chai.request(server)
               .get('/api/v1/makes/Audi/models')
               .end((err, response) => {
