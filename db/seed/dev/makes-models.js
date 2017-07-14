@@ -6,19 +6,19 @@ let helper = new Helper()
 const importTrims = (knex, trim, year) =>{
   return knex('trims').insert({
     year_id: year[0],
-    trim_id: parseInt(trim.trim_id, 10),
+    trim_id: trim.trim_id,
     fuel_type: trim.fuel_type,
-    horsepower: parseInt(trim.horsepower, 10),
+    horsepower: trim.horsepower,
     cylinders: trim.cylinders,
     transmission: trim.transmission,
     drive: trim.drive,
-    doors: parseInt(trim.doors, 10),
+    doors: trim.doors,
     market: trim.market,
     size: trim.size,
     style: trim.style,
-    highway_mpg: parseInt(trim.highway_mpg, 10),
-    city_mpg: parseInt(trim.city_mpg, 10),
-    msrp: parseInt(trim.msrp, 10)
+    highway_mpg: trim.highway_mpg,
+    city_mpg: trim.city_mpg,
+    msrp: trim.msrp,
   })
 }
 
