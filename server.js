@@ -8,9 +8,9 @@ const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
-app.set('username', config.USERNAME);
-app.set('password', config.PASSWORD);
-app.set('secretKey', config.CLIENT_SECRET);
+app.set('username', process.env.USERNAME);
+app.set('password', process.env.PASSWORD);
+app.set('secretKey', process.env.CLIENT_SECRET);
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -20,7 +20,7 @@ app.locals.title = 'BYOB'
 
 app.use(express.static('public'))
 
-if (!config.CLIENT_SECRET || !config.USERNAME || !config.PASSWORD) {
+if (!process.env.CLIENT_SECRET || !process.env.USERNAME || !process.env.PASSWORD) {
   throw 'Make sure you have a CLIENT_SECRET, USERNAME, and PASSWORD in your .env file'
 }
 
