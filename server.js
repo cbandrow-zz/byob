@@ -53,7 +53,7 @@ app.post('/api/v1/authenticate', (request, response) =>{
 const checkAuth  = (request, response, next) =>{
 
   const token = request.body.token ||
-                request.param('token') ||
+                request.param.token ||
                 request.headers['authorization'];
   if (token) {
     jwt.verify(token, app.get('secretKey'), (error, decoded) => {
@@ -107,7 +107,6 @@ app.get('/api/v1/makes/:make_name/', (request, response) => {
       error: `Missing make_name parameter in api request. `
     })
   }
-
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
       if(make.length){
@@ -139,12 +138,10 @@ app.get('/api/v1/makes/:make_name/models', (request, response) => {
     .then((make) => {
       database('models').where('make_id', make[0].id).select()
       .then((model)=>{
-        if(model.length){
+        if(model.length && model.model_name !== ''){
           response.status(200).json(model)
-        } else {
-          response.status(404).json({
-            error: '404: No Models Found'
-          })
+        } else if (model.model_name === ''){
+          response.status(404).json()
         }
       })
     })
@@ -162,9 +159,9 @@ app.get('/api/v1/models/', (request, response) => {
     .then((make) => {
       database('models').where('make_id', make[0].id).select()
       .then((model)=>{
-        if(model.length){
+        if(model.length && model[0].model_name !== ''){
           response.status(200).json(model)
-        } else {
+        } else if(model[0].model_name === '') {
           response.status(404).json({
             error: '404: No Models Found'
           })
@@ -181,17 +178,20 @@ app.get('/api/v1/models/', (request, response) => {
 //get years per model
 app.get('/api/v1/makes/:make_name/models/:model_name', (request, response) =>{
 
-  const model_name = request.params.model_name
-
-  if (!make_name) {
-    return response.status(422).send({
-      error: `Missing make_name parameter in api request.`
-    })
+  const expectedReq = ["make_name", "model_name"];
+  const data = request.params;
+  for(let requiredParameter of expectedReq){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Make Name, a Model Name.
+        You are missing a ${requiredParameter} property`
+      })
+    }
   }
 
   database('makes').where('make_name', request.params.make_name).select()
     .then((make) => {
-      database('models').where('model_name', request.params.model_name).select()
+      database('models').where(database.raw('lower("model_name")'), request.params.model_name.toLowerCase()).select()
       .then((model)=>{
         database('years').where('model_id', model[0].id).select()
         .then((years) =>{
@@ -309,13 +309,13 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
       }).select()
       .then((model)=>{
         database('years').where({
-          year: request.params.year,
+          year: parseInt(request.params.year, 10),
           model_id: model[0].id
         }).select()
         .then((year) =>{
           database('trims').where({
-            year_id: year[0].id,
-            trim_id: request.params.id
+            year_id: parseInt(year[0].id, 10),
+            trim_id: parseInt(request.params.id),
           }).select()
             .then((trims) =>{
               if(trims.length){
@@ -389,7 +389,7 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (reque
                 highway_mpg: trimData.highway_mpg,
                 city_mpg: trimData.city_mpg,
                 msrp: trimData.msrp
-              })
+              }).select()
               .then(()=>{
                 response.status(201).json(trims)
               })
@@ -412,16 +412,12 @@ app.post('/api/v1/makes/:make_name/models/:model_name/:year/', checkAuth, (reque
 //post completely new model with year and trim data.
 app.post('/api/v1/makes/:make_name', checkAuth, (request, response) =>{
 
-  const expectedReq = "make_name";
-  const data = request.params;
-  for(let requiredParameter of expectedReq){
-    if(!data[requiredParameter]){
+    if(!request.params.make_name){
       return response.status(422).json({
         error: `Expected format requires a Make Name, a Model Name, and a Year.
         You are missing a ${requiredParameter} property`
       })
     }
-  }
 
   let newModelData = request.body.model
 
@@ -600,7 +596,7 @@ app.put('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, resp
     .then((make) => {
       database('models').where('model_name', request.params.model_name).update(updateModelName, 'model_name')
       .then((model_name) =>{
-        response.status(201).json({
+        response.status(202).json({
           model_name
         })
       })
@@ -646,7 +642,7 @@ app.delete('/api/v1/makes/:make_name/models/:model_name', checkAuth, (request, r
           .then(() => database('years').where({model_id: model_id}).del())
           .then(() => database('models').where({model_name: request.params.model_name}).del())
         .then((data) =>{
-          response.status(200).json({
+          response.status(204).json({
             message: 'Model data and affiliated were deleted.'
           })
         })
@@ -687,9 +683,7 @@ app.delete('/api/v1/makes/:make_name/models/:model_name/:year', checkAuth, (requ
           .then(() => database('trims').where({year_id: year_id}).del())
           .then(() => database('years').where({model_id: model_id}).del())
         .then((data) =>{
-          response.status(200).json({
-            message: 'Year data and affiliated trims were deleted.'
-          })
+          response.status(204).json(data)
         })
         .catch((error) =>{
           response.status(500).json({
