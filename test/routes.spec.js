@@ -263,7 +263,7 @@ describe('POST tests', () =>{
     .then(() => done());
   });
 
-  it.skip('should POST a new trim_id.', (done) =>{
+  it('should POST a new trim_id.', (done) =>{
       chai.request(server)
       .post('/api/v1/makes/Audi/models/Q7/2014/')
       .set('Authorization', token)
@@ -290,7 +290,7 @@ describe('POST tests', () =>{
       });
     });
 
-  it.skip('should POST a new model based on make.', (done) =>{
+  it('should POST a new model based on make.', (done) =>{
       chai.request(server)
       .post('/api/v1/makes/Audi/')
       .set('Authorization', token)
@@ -348,7 +348,7 @@ describe('PUT tests', () =>{
     .then(() => done());
   });
 
-  it.skip('should PUT a new trim_id.', (done) =>{
+  it('should PUT a new trim_id.', (done) =>{
       chai.request(server)
       .put('/api/v1/makes/Audi/models/Q7/2014/1')
       .set('Authorization', token)
@@ -373,7 +373,7 @@ describe('PUT tests', () =>{
       });
     });
 
-  it.skip('should PUT a new trim_id.', (done) =>{
+  it('should PUT a new trim_id.', (done) =>{
       chai.request(server)
       .put('/api/v1/makes/Audi/models/Q7')
       .set('Authorization', token)
@@ -418,7 +418,7 @@ describe('DELETE endpoint tests', () =>{
     .then(() => done());
   });
 
-  it.skip('should DELETE a model.', (done) =>{
+  it('should DELETE a model.', (done) =>{
       chai.request(server)
       .post('/api/v1/makes/Audi/')
       .set('Authorization', token)

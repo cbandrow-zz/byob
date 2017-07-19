@@ -34,7 +34,6 @@ const importYears = (knex, year, model) =>{
         trimsPromise.push(importTrims(knex, trim, year));
       });
       return Promise.all(trimsPromise)
-      .then(()=> console.log('Seeding Complete at Trims'))
       .catch((error) => console.log(`Error seeding at Trims Promise: ${error}`));
     });
 };
@@ -51,7 +50,6 @@ const importModels = (knex, model, make) =>{
       yearsPromise.push(importYears(knex, year, model));
     });
     return Promise.all(yearsPromise)
-    .then(() => console.log('Seeding Complete at Years'))
     .catch((error) => console.log(`Error seeding at Years Promise: ${error}`));
   });
 };
@@ -67,7 +65,6 @@ const importMakes = (knex, make, carsData) =>{
         modelsPromise.push(importModels(knex, model, make));
       });
       return Promise.all(modelsPromise)
-      .then(() => console.log('Seeding Complete at Models Promise'))
       .catch((error) => console.log(`Error seeding data at Models Promise: ${error}`));
     });
 };
@@ -76,7 +73,9 @@ const importMakes = (knex, make, carsData) =>{
 exports.seed = (knex, Promise) => {
   let carsData = helper.reduceMakes(carData);
   let makesArray = Object.keys(carsData);
-  return knex('models').del()
+  return knex('trims').del()
+    .then(() => knex('years').del())
+    .then(() => knex('models').del())
     .then(() => knex('makes').del())
     .then(() =>{
       let makesPromise = [];
@@ -84,7 +83,6 @@ exports.seed = (knex, Promise) => {
         makesPromise.push(importMakes(knex, make, carsData));
       });
       return Promise.all(makesPromise)
-      .then(() => console.log('Seeding Complete at Makes Promise'))
       .catch((error) => console.log(`Error seeding data at makesPromise: ${error}`));
     })
     .catch( error => console.log(`Error seeding data: ${error}`));
