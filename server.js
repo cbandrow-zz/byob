@@ -3,8 +3,6 @@ const app = express();
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 
-const config = require('dotenv').config();
-
 const environment = process.env.NODE_ENV || 'development' ;
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
@@ -21,35 +19,9 @@ app.locals.title = 'BYOB';
 
 app.use(express.static('public'));
 
-if (!process.env.CLIENT_SECRET || !process.env.USERNAME || !process.env.PASSWORD) {
-  throw 'Make sure you have a CLIENT_SECRET, USERNAME, and PASSWORD in your .env file';
-}
+
 
 /////Endpoints/////
-
-//Authentication
-
-app.post('/api/v1/authenticate', (request, response) =>{
-  const user = request.body;
-  if (user.username !== config.USERNAME || user.password !== config.PASSWORD) {
-    response.status(403).send({
-      success: false,
-      message: 'Invalid Credentials'
-    });
-
-    } else {
-      let token = jwt.sign(user, app.get('secretKey'), {
-        expiresIn: 1604800 // expires in week
-      });
-
-      response.json({
-        success: true,
-        username: user.username,
-        token: token
-      });
-    }
-});
-
 const checkAuth  = (request, response, next) =>{
 
   const token = request.body.token ||
