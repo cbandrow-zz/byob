@@ -1,7 +1,5 @@
 {
   "node": true,
-
-  
   "curly": false,
   "globals": {
     "fetch": false

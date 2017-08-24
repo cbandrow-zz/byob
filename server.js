@@ -318,6 +318,34 @@ app.get('/api/v1/makes/:make_name/models/:model_name/:year/:id', (request, respo
     });
 });
 
+app.get('/api/v1/trims/', (request, response) =>{
+  let {transmission, style, size, market, msrp} = request.query;
+  database('trims').whereRaw('LOWER(style)=?', style).select()
+  .then((trims) =>{
+    return Promise.all(trims.map((trim) =>{
+        return database('years').where('id', trim.year_id).select()
+          .then((years)=>{
+            trim.year = years[0].year
+            return database('models').where('id', years[0].model_id).select()
+           .then((models)=>{
+              trim.model = models[0].model_name
+              return database('makes').where('id', models[0].make_id).select()
+             .then((makes) =>{
+               // carData = Object.assign({}, trim, {year: years[0].year}, {model: models[0].model_name}, {make: makes[0].make_name})
+               // carInfo.push(carData)
+               // console.log(carInfo)
+               trim.make = makes[0].make_name
+               return trim
+             })
+           })
+          })
+        }))
+    })
+    .then((carData) =>{
+      response.status(200).json(carData)
+    })
+  })
+
 //POST ENDPOINTS----------------//
 
 //post a new trim to a specific model by year.
